@@ -1,3 +1,6 @@
+#ifndef CPU_h
+#define CPU_h
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -20,4 +23,6 @@ typedef struct CellType
 typedef struct{
     PointerType First, Last;
 } ListType;
+
+#endif
 

@@ -2,5 +2,6 @@
 
 void main()
 {
-    menu();
+    process_table table;
+    menu(&table);
 }
