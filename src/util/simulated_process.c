@@ -1,3 +1,5 @@
+#include "../../headers/util/simulated_process.h"
+
 void instruction_n(int number_of_variable_to_declare, int **memory)
 {
     *memory = (int *)malloc(number_of_variable_to_declare * sizeof(int));
@@ -8,22 +10,22 @@ void instruction_n(int number_of_variable_to_declare, int **memory)
     }
 }
 
-void instruction_d(int index_of_variable_declared, int** memory)
+void instruction_d(int index_of_variable_declared, int **memory)
 {
     (*memory)[index_of_variable_declared] = 0;
 }
 
-void instruction_v(int index, int value, int** memory)
+void instruction_v(int index, int value, int **memory)
 {
     (*memory)[index] = value;
 }
 
-void instruction_a(int index, int value, int** memory)
+void instruction_a(int index, int value, int **memory)
 {
     (*memory)[index] = (*memory)[index] + value;
 }
 
-void instruction_s(int index, int value, int** memory)
+void instruction_s(int index, int value, int **memory)
 {
     (*memory)[index] = (*memory)[index] - value;
 }
