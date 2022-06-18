@@ -8,5 +8,5 @@
         "simulated_process.h": "c",
         "management.h": "c",
         "scheduling.h": "c"
-    }
+    },
 }

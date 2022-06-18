@@ -1,12 +1,10 @@
 #ifndef MANAGEMENT_H
 #define MANAGEMENT_H
 
+#include "../../headers/core/scheduling.h"
+#include "../../headers/shared/queue.h"
 #include "../../headers/util/cpu.h"
 #include "../../headers/util/process_table.h"
-
-#include "../../headers/shared/queue.h"
-
-#include "../../headers/core/scheduling.h"
 
 // Gerenciador de Processos
 typedef struct
@@ -34,5 +32,36 @@ char *read_instructions_file(cpu *cpu);
  * Cria um novo processo
  */
 void create_new_process(management *management, int number_of_instructions, int size, pid_t pid, int scheduling_type);
+
+/*
+ * Substituir a imagem atual de um processo
+ */
+void replace_current_image_process(management *management, char *instruction);
+
+/*
+ * Trocar contexto => Copia o estado do processo simulado em execução da CPU para a Tabela de Processos
+ * E copiar o estado do recém escalonado processo simulado da tabela de processos para a CPU
+ */
+void change_context(management *management, int index_next_process, int initial_state_process);
+
+/*
+ * Carrega o processo na CPU
+ */
+void load_cpu_process(management *management, int index_next_process);
+
+/*
+ * Simulado por uma imagem nova de processo
+ */
+void end_simulated_process(management *management, int *size, int *max_time, int scheduling_type);
+
+/*
+ * Retorna 1 caso o Quantum do processo tenha atingido o limite e 0 caso o contrário
+ */
+int verify_quantum(management *management);
+
+/*
+ * Imprime o Gerenciador de Processos
+ */
+void print_manament(management *management, int size, int number_of_process, int longer_time, int scheduling_type);
 
 #endif
