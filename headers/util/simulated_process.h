@@ -1,6 +1,7 @@
-#include "cpu.h"
 #ifndef SIMULATED_PROCESS_h
 #define SIMULATED_PROCESS_h
+
+#include "./cpu.h"
 
 typedef struct
 {
