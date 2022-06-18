@@ -1,6 +1,9 @@
 #ifndef SIMULATED_PROCESS_h
 #define SIMULATED_PROCESS_h
 
+#include <stdio.h>
+#include <stdlib.h>
+
 #include "./cpu.h"
 
 typedef struct
@@ -11,7 +14,7 @@ typedef struct
     int pc;
 } simulated_process;
 
-/* 
+/*
 * Aloca uma quantidade de memória para as variáveis do processo simulado. 
 * O valor desta quantidade é informado para a função
 */

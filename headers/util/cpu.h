@@ -9,7 +9,6 @@ typedef struct program
     char file_name[30];
 }program;
 
-
 typedef struct
 {
     program *program;
