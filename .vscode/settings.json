@@ -1,5 +1,12 @@
 {
     "files.associations": {
-        "stdlib.h": "c"
+        "stdlib.h": "c",
+        "queue.h": "c",
+        "stdio.h": "c",
+        "unistd.h": "c",
+        "instructions.h": "c",
+        "simulated_process.h": "c",
+        "management.h": "c",
+        "scheduling.h": "c"
     }
 }

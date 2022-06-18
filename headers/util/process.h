@@ -4,11 +4,9 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <unistd.h>
 
-#include "./instructions.h"
-
-#define INSTRUCTIONS_SIZE 1000
-#define UNDEFINED -1
+#include "./simulated_process.h"
 
 typedef enum
 {
@@ -19,30 +17,15 @@ typedef enum
 
 typedef struct
 {
-    int pid;
-    int ppid;
+    pid_t pid;
+    pid_t ppid;
     int pc;
+    int* data_structure;
     int priority;
     states state;
-    float inital_time;
-    float cpu_time;
-    instructions instructions[INSTRUCTIONS_SIZE];
-    int size;
+    int inital_time;
+    int cpu_time;
+    simulated_process* simulated_process;
 } process;
-
-/*
- * Inicializa o processo
- */
-void init_process(process *process, int pid, int ppid);
-
-/*
- * Cria um processo
- */
-process *create_process(int pid, int ppid);
-
-/*
- * Imprime um processo
- */
-void print_process(process *process);
 
 #endif

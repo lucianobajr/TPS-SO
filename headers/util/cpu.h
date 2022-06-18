@@ -3,26 +3,14 @@
 
 #include <stdio.h>
 #include <stdlib.h>
-#include <string.h>
-#include <time.h>
 
-typedef struct Cpu{
-    int current_value = 0;
-    float time_slice;
-    //Adicionar os registradores para armazenar os dados, como?
-    
-}Cpu;
-
-typedef struct CellType *PointerType;
-typedef struct CellType
+typedef struct
 {
-    Cpu cpu;
-    PointerType next;
-}CellType;
-
-typedef struct{
-    PointerType First, Last;
-} ListType;
+    char file_name[30];
+    int pc;
+    int *memory;
+    int *size_memory;
+    int time;
+} cpu;
 
 #endif
-

@@ -2,6 +2,4 @@
 #define CONTROL_H
 
 
-
-
 #endif
