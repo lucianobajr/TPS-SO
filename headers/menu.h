@@ -3,11 +3,10 @@
 
 #define SIZE 50
 
-
 #include <stdlib.h>
 #include <stdio.h>
-#include "../core/control.h"
 
+#include "../core/control.h"
 
 /*
 * menu

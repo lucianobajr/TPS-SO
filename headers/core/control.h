@@ -1,6 +1,8 @@
 #ifndef CONTROL_H
 #define CONTROL_H
 
+#define SIZE 50
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
