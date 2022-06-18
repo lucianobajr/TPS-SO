@@ -1,6 +1,6 @@
 #include "../../headers/core/management.h"
 
-void init_management(management *management, char *file_name, int size)
+void init_management(management *management, char *file_name, int size, int type_escalation_policy)
 {
     management->time = 0;
     management->process_table = (process_table *)malloc(sizeof(process_table));
@@ -28,6 +28,9 @@ void init_management(management *management, char *file_name, int size)
     management->cpu.memory = NULL;
     management->cpu.time = 0;
     management->cpu.size_memory = &(new_simulated_process->number_of_vars);
+
+    //define a política de escalonamento
+    management->type_escalation_policy = type_escalation_policy;
 }
 
 char *read_instructions_file(cpu *cpu)
@@ -58,7 +61,7 @@ char *read_instructions_file(cpu *cpu)
     return line;
 }
 
-void create_new_process(management *management, int number_of_instructions, int size, pid_t pid, int scheduling_type)
+void create_new_process(management *management, int number_of_instructions, int size, pid_t pid)
 {
     simulated_process *children = (simulated_process *)malloc(sizeof(simulated_process));
 
@@ -96,11 +99,11 @@ void create_new_process(management *management, int number_of_instructions, int 
     // Quando o processo filho é criado ele compartilha sua memória com o processo pai
     management->process_table[(size - 1)].process.data_structure = children->memory;
 
-    if (scheduling_type == 1)
+    if (management->type_escalation_policy == 1)
     {
         do_scheduling(&(management->scheduling), (size - 1), management->process_table[(size - 1)].process.priority);
     }
-    else if (scheduling_type == 0)
+    else if (management->type_escalation_policy == 0)
     {
         to_queue(&(management->ready), (size - 1));
     }
@@ -164,7 +167,7 @@ void change_context(management *management, int index_next_process, int initial_
     }
 }
 
-void end_simulated_process(management *management, int *size, int *max_time, int scheduling_type)
+void end_simulated_process(management *management, int *size, int *max_time)
 {
     int index_end_simulated_process = management->executing_state;
     int next_process;
@@ -175,11 +178,11 @@ void end_simulated_process(management *management, int *size, int *max_time, int
         *max_time = total_time;
     }
 
-    if (scheduling_type == 1)
+    if (management->type_escalation_policy == 1)
     {
         next_process = dequeue_scheduling(&(management->scheduling));
     }
-    else if (scheduling_type == 0)
+    else if (management->type_escalation_policy == 0)
     {
         next_process = dequeue(&(management->ready));
     }
@@ -231,7 +234,7 @@ int verify_quantum(management *management)
     }
 }
 
-void print_manament(management *management, int size, int number_of_process, int longer_time, int scheduling_type)
+void print_manament(management *management, int size, int number_of_process, int longer_time)
 {
     int cycle_time;
     float percentage;
@@ -333,7 +336,7 @@ void print_manament(management *management, int size, int number_of_process, int
     }
 
     printf("Processo em estado pronto (Índices): \n");
-    if (scheduling_type == 1)
+    if (management->type_escalation_policy == 1)
     {
         printf("Fila 0: ");
         print_queue(management->scheduling.first);
@@ -344,7 +347,7 @@ void print_manament(management *management, int size, int number_of_process, int
         printf("Fila 3: ");
         print_queue(management->scheduling.fourth);
     }
-    else if (scheduling_type == 0)
+    else if (management->type_escalation_policy == 0)
     {
         print_queue(&(management->ready));
     }
