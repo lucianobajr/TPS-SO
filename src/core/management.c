@@ -13,7 +13,7 @@ void init_management(management *management, char *file_name, int size, int type
     // O gerenciador de processos cria o primeiro processo simulado (process id = 0)
     simulated_process *new_simulated_process = (simulated_process *)malloc(sizeof(simulated_process));
     new_simulated_process->pc = 0;
-    strcpy(new_simulated_process->file_name, file_name);
+    strcpy(new_simulated_process->program->file_name, file_name);
 
     // Registra o primeiro processo na tabela de processos
     management->process_table[0].process.pc = &(new_simulated_process->pc);
@@ -24,7 +24,7 @@ void init_management(management *management, char *file_name, int size, int type
 
     management->executing_state = (size - 1);
     management->cpu.pc = new_simulated_process->pc;
-    strcpy(management->cpu.file_name, new_simulated_process->file_name);
+    strcpy(management->cpu.program->file_name, new_simulated_process->program->file_name);
     management->cpu.memory = NULL;
     management->cpu.time = 0;
     management->cpu.size_memory = &(new_simulated_process->number_of_vars);
@@ -39,7 +39,7 @@ char *read_instructions_file(cpu *cpu)
     char *line = (char *)malloc(20 * sizeof(char));
     int counter = 0;
 
-    file = fopen(cpu->file_name, "r");
+    file = fopen(cpu->program->file_name, "r");
 
     if (file == NULL)
     {
@@ -66,7 +66,7 @@ void create_new_process(management *management, int number_of_instructions, int 
     simulated_process *children = (simulated_process *)malloc(sizeof(simulated_process));
 
     children->pc = management->cpu.pc;
-    strcpy(children->file_name, management->cpu.file_name);
+    strcpy(children->program->file_name, management->cpu.program->file_name);
 
     if (management->cpu.memory != NULL)
     {
@@ -116,14 +116,14 @@ void replace_current_image_process(management *management, char *instruction)
 
     for (k = 2; k < (strlen(instruction)); k++)
     {
-        management->cpu.file_name[k - 2] = instruction[k];
+        management->cpu.program->file_name[k - 2] = instruction[k];
     }
 
     k = 0;
 
     while (1)
     {
-        if (management->cpu.file_name[k] == '.')
+        if (management->cpu.program->file_name[k] == '.')
         {
             break;
         }
@@ -131,7 +131,7 @@ void replace_current_image_process(management *management, char *instruction)
         k++;
     }
 
-    management->cpu.file_name[k + 4] = '\0';
+    management->cpu.program->file_name[k + 4] = '\0';
     management->cpu.pc = 0;
     free((management->cpu.memory));
     management->cpu.memory = NULL;
@@ -145,7 +145,7 @@ void load_cpu_process(management *management, int index_next_process)
     management->cpu.time = 0;
     management->cpu.size_memory = &(management->process_table[management->executing_state].process.simulated_process->number_of_vars);
     management->cpu.memory = management->process_table[management->executing_state].process.data_structure;
-    strcpy(management->cpu.file_name, management->process_table[management->executing_state].process.simulated_process->file_name);
+    strcpy(management->cpu.program->file_name, management->process_table[management->executing_state].process.simulated_process->program->file_name);
 }
 
 void change_context(management *management, int index_next_process, int initial_state_process)
