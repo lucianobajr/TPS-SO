@@ -8,7 +8,6 @@ void menu()
     int fd[2];
     pid_t pid;
 
-
     if (pipe(fd) == -1)
     {
         printf("Pipe error!!!\n");
@@ -53,9 +52,10 @@ void menu()
                 printf("---------->");
                 scanf("%c", &command);
             }
-            
+
             write(fd[1], &command, sizeof(command));
-            if(choice == 1) sleep(1);
+            if (choice == 1)
+                sleep(1);
 
         } while (command != 'M');
         close(fd[1]);

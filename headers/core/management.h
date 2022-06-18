@@ -9,7 +9,7 @@
 typedef enum
 {
     MULTIPLE_QUEUES,
-    OUR
+    FCFS
 } escalation_policy;
 
 // Gerenciador de Processos

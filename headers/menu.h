@@ -5,6 +5,7 @@
 #include <stdio.h>
 #include "../core/control.h"
 #define SIZE 50
+
 /*
 *menu
 */
