@@ -70,6 +70,6 @@ int verify_quantum(management *management);
 /*
  * Imprime o Gerenciador de Processos
  */
-void print_manament(management *management, int size, int number_of_process, int longer_time);
+void print_management(management *management, int size, int number_of_process, int longer_time);
 
 #endif

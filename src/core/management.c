@@ -234,7 +234,7 @@ int verify_quantum(management *management)
     }
 }
 
-void print_manament(management *management, int size, int number_of_process, int longer_time)
+void print_management(management *management, int size, int number_of_process, int longer_time)
 {
     int cycle_time;
     float percentage;
