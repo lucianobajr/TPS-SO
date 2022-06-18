@@ -1,9 +1,10 @@
+#include "cpu.h"
 #ifndef SIMULATED_PROCESS_h
 #define SIMULATED_PROCESS_h
 
 typedef struct
 {
-    char file_name[30];
+    program *program;
     int* memory;
     int number_of_vars;
     int pc;
