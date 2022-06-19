@@ -1,15 +1,15 @@
 {
     "files.associations": {
-        "stdlib.h": "c",
-        "queue.h": "c",
-        "stdio.h": "c",
-        "unistd.h": "c",
-        "instructions.h": "c",
-        "simulated_process.h": "c",
-        "management.h": "c",
+        "processosimulado.h": "c",
+        "escalonador.h": "c",
+        "processogerenciadorprocessos.h": "c",
         "scheduling.h": "c",
-        "process.h": "c",
-        "menu.h": "c",
-        "control.h": "c"
-    },
+        "queue.h": "c",
+        "cpu.h": "c",
+        "control.h": "c",
+        "program.h": "c",
+        "simulated_process.h": "c",
+        "process_table.h": "c",
+        "log.h": "c"
+    }
 }

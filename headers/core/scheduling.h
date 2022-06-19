@@ -7,11 +7,9 @@
 #define QUANTUM_PRIORITY_2 4
 #define QUANTUM_PRIORITY_3 8
 
-#include <stdio.h>
-#include <stdlib.h>
-
 #include "../../headers/shared/queue.h"
 
+// Escalonamento de múltiplas com classes de prioridade
 typedef struct
 {
     queue *first;
@@ -19,8 +17,6 @@ typedef struct
     queue *third;
     queue *fourth;
 } scheduling;
-
-// Escalonamento de múltiplas com classes de prioridade
 
 /*
  * Inicializa o escalonador
@@ -36,5 +32,4 @@ void do_scheduling(scheduling *scheduling, int index, int priority);
  * Desenfileira o escalonador
  */
 int dequeue_scheduling(scheduling *scheduling);
-
 #endif

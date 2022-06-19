@@ -3,12 +3,15 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+#include <unistd.h>
 #include <string.h>
+#include <limits.h>
+#include <sys/wait.h>
 
 typedef struct node *pointer;
 typedef struct node
 {
-    int index;
+    int index;// armazena os indices dos processos que estao em determinado estado
     pointer next;
 } node;
 

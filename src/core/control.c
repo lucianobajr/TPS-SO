@@ -1,185 +1,348 @@
 #include "../../headers/core/control.h"
-#include "../../headers/core/management.h"
 
-void control(int fd[])
+int control()
 {
+    FILE *file;
+    char file_name[TAM];
+    int input_type;
+    int fd[2]; /* Descritores de arquivo para o pipe, posições: 0 leitura - 1 escrita */
+    pid_t pid; /* Variável para o fork*/
 
-    FILE *file_pointer;
-    management management;
-    char instruction[SIZE];
-    char *file_name = "../../data/init.txt";
-    char input_command;
-    int size = 1;
-    int number_of_process = 1;
-    int time = 0;
-    int max_process = -1;
-    pid_t pid;
-    int non_blocked_process;
-
-    file_pointer = fopen(file_name, "r");
-
-    init_management(&management, file_name, size, 0);
-
-    if (file_pointer == NULL)
+    if (pipe(fd) == -1)
     {
-        printf("File is empty!!!");
+        logger("Error pipe\n", ERROR_COLOR);
+        return 1;
     }
-    else
-    {
+
+    print_menu1();
+    scanf("%d", &input_type);
+
+    if (input_type == 1)
+    { // ENTRADA POR ARQUIVO
+
         do
         {
-            read(fd[0], &input_command, sizeof(input_command));
+            printf("Insira o name do arquivo: \n");
+            printf("----------> ");
+            scanf("%s", file_name);
+            file = fopen(file_name, "r");
 
-            switch (fgetc(file_pointer))
+            if (file == NULL)
+            {
+                logger("Error! File not found!\n", ERROR_COLOR);
+            }
+        } while (file == NULL);
+    }
+
+    if ((pid = fork()) == -1)
+    {
+        printf("Error fork\n");
+        return 1;
+    }
+
+    if (pid > 0)
+    { /* Execução processo pai */ // O PROCESSO PAI SERÁ O PROCESSO CONTROLE
+        char comando;
+        close(fd[0]); // fecha a leitura do pipe pq o processo controle irá apenas escrever
+
+        if (input_type == 2)
+        { // ENTRADA MANUAL
+            printf("\nComandos:\n");
+        }
+        do
+        {
+            if (input_type == 1)
+            { // ENTRADA POR ARQUIVO
+                fscanf(file, " %c", &comando);
+                printf("---------->\n");
+            }
+            else
+            {
+                printf("---------->");
+                scanf(" %c", &comando);
+            }
+
+            write(fd[1], &comando, sizeof(comando)); // abre a leitura do pipe pra enviar os comandos para o processo gerenciador de processos
+            if (input_type == 1)
+                sleep(1); // coloca o sistema em modo de espera para que seja possível ver os resultados
+        } while (comando != 'M');
+
+        close(fd[1]); // fecha o pipe de escrita para não ter risco de leak de memoria - ou dar outra coisa ruim pois é uma chamada de sistema
+        wait(NULL);
+        return 1;
+    }
+    else
+    { /* Execução processo filho */ // O PROCESSO FILHO SERÁ O GERENCIADOR DE PROCESSOS
+
+        // Iniciando a estrutura que representa o processo gerenciador
+        management process_manager;
+        // Recebe os comandos do processo controle e processa eles
+        char process_command_control; // Variável para receber o comando do processo Controle
+        char *name = "./data/init-2.txt";
+        char instruction[30];
+        int size = 1;             // Tabela de processos (1 porque é o primeiro processo) - pode variar de acordo com a qnt de processos atual (se for encerrado é retirado da tabela)
+        int global_time = 0;      // inicializando a contagem de unidade de tempo (instruções) do gerenciador
+        int total_of_process = 1; /* todos os processos, independente de terem sido encerrados ou não*/
+        int non_blocked_process;  // pega o indice do primeiro processo bloqueado para ser desbloqueado
+        int max_process = -1;     // para registrar qual tempo do processo mais longo
+        pid_t pid2;               // identificador do processo de print_management
+
+        close(fd[1]); // fecha o pipe de escrita para não ter risco de leak de memoria - ou dar outra coisa ruim pois é uma chamada de sistema
+
+        init_management(&process_manager, name, size);
+
+        do
+        {
+            read(fd[0], &process_command_control, sizeof(process_command_control));
+
+            switch (process_command_control)
             {
             case 'U':
-                time++;
-                management.time++;
-                strcpy(instruction, read_instructions_file(&management.cpu));
-
-                management.cpu.time++;
-                if (instruction[0] != 'F' && instruction[0] != 'R')
+                /* Incrementando o tempo*/
+                global_time++;
+                process_manager.time++;
+                /* Verifica se há um processo na CPU no momento*/
+                if (process_manager.executing_state != -1)
                 {
-                    management.cpu.pc++;
+
+                    process_manager.cpu.time++;
+                    strcpy(instruction, read_instructions_file(&(process_manager.cpu)));
+
+                    if (instruction[0] != 'F' && instruction[0] != 'R')
+                    {
+                        process_manager.cpu.pc++;
+                    }
+
+                    if (DEBUG)
+                    {
+                        printf("---------------------------------------------------------\n");
+                        printf("Nome arquivo atual: %s\n", process_manager.cpu.program->file_name);
+                        printf("Entrada atual: ---> %d\n", process_manager.executing_state);
+                        printf("Contador: --> %d, Instrucao: --> %s", process_manager.cpu.pc, instruction);
+                        printf("Prioridade: --> %d\n", process_manager.process_table[process_manager.executing_state].priority);
+                        printf("---------------------------------------------------------\n");
+                    }
+                }
+                else
+                {
+                    strcpy(instruction, "0");
                 }
 
-                // Needs to add the N D V A S B T F R instructions
-                switch (instruction[0])
+                if (instruction[0] == 'N')
                 {
-                case 'N':
-                    instruction_n(atoi(&instruction[2]), &(management.cpu.memory));
-                    *(management.cpu.size_memory) = atoi(&instruction[2]);
-                case 'D':
-                    instruction_d(atoi(&instruction[2]), &management.cpu.memory);
-                case 'V':
-                    instruction_v(atoi(&instruction[2]), atoi(&instruction[4]), &management.cpu.memory);
-                case 'A':
-                    instruction_a(atoi(&instruction[2]), atoi(&instruction[4]), &management.cpu.memory);
-                case 'S':
-                    instruction_s(atoi(&instruction[2]), atoi(&instruction[4]), &(management.cpu.memory));
-                case 'B':
-                    management.process_table[management.executing_state].process.state = 2;
-                    if (management.process_table[management.executing_state].process.priority > 0)
-                    {
-                        management.process_table[management.executing_state].process.priority -= 1;
-                    }
-                    to_queue(&management.blocked, management.executing_state);
-                    if (management.type_escalation_policy == MULTIPLE_QUEUES)
-                    {
-                        change_context(&management, dequeue_scheduling(&management.scheduling), BLOCKED);
-                    }
-                    else if (management.type_escalation_policy == FCFS)
-                    {
-                        change_context(&management, dequeue(&management.ready), BLOCKED);
-                    }
+                    instruction_n(atoi(&(instruction[2])), &(process_manager.cpu.memory));
+                    *(process_manager.cpu.size_memory) = atoi(&(instruction[2]));
+                }
+                else if (instruction[0] == 'D')
+                {
+                    instruction_d(atoi(&(instruction[2])), &(process_manager.cpu.memory));
+                }
+                else if (instruction[0] == 'V')
+                {
+                    instruction_v(atoi(&(instruction[2])), atoi(&(instruction[4])), &(process_manager.cpu.memory));
+                }
+                else if (instruction[0] == 'A')
+                {
+                    instruction_a(atoi(&(instruction[2])), atoi(&(instruction[4])), &(process_manager.cpu.memory));
+                }
+                else if (instruction[0] == 'S')
+                {
+                    instruction_s(atoi(&(instruction[2])), atoi(&(instruction[4])), &(process_manager.cpu.memory));
+                }
+                else if (instruction[0] == 'B')
+                {
 
-                case 'T':
-                    end_simulated_process(&management, &size, &max_process);
-                case 'F':
+                    process_manager.process_table[process_manager.executing_state].state = BLOCKED;
+                    if (process_manager.process_table[process_manager.executing_state].priority > 0)
+                    {
+                        process_manager.process_table[process_manager.executing_state].priority -= 1;
+                    }
+                    to_queue(&(process_manager.blocked), process_manager.executing_state);
+
+                    if (SCHEDULER == 1)
+                    {
+                        change_context(&(process_manager), dequeue_scheduling(&(process_manager.scheduler)), BLOCKED);
+                    }
+                    else if (SCHEDULER == 2)
+                    {
+                        change_context(&(process_manager), dequeue(&(process_manager.ready)), BLOCKED);
+                    }
+                }
+                else if (instruction[0] == 'T')
+                {
+                    end_simulated_process(&(process_manager), &size, &max_process);
+                }
+                else if (instruction[0] == 'F')
+                {
                     size++;
-                    number_of_process++;
-                    create_new_process(&management, atoi(&instruction[2]), size, number_of_process - 1);
-                case 'R':
-                    replace_current_image_process(&management, instruction);
-                default:
-                    break;
+                    total_of_process++;
+                    create_new_process(&process_manager, atoi(&(instruction[2])), size, total_of_process - 1);
+                }
+                else if (instruction[0] == 'R')
+                { // Substituir imagem
+
+                    replace_current_image_process(&process_manager, instruction);
+                }
+
+                break;
+            case 'I':
+
+                /* Criar um processo de Impressao */
+                if ((pid2 = fork()) == -1)
+                {
+                    printf("Error fork\n");
+                    return 1;
+                }
+
+                if (pid2 == 0)
+                {
+                    print_management(&process_manager, size, total_of_process, max_process);
+                    exit(0);
                 }
 
                 break;
             case 'L':
-                non_blocked_process = dequeue(&management.blocked);
+                non_blocked_process = dequeue(&(process_manager.blocked));
 
                 if (non_blocked_process != -1)
                 {
-                    management.process_table[non_blocked_process].process.state = READY;
-                    if (management.type_escalation_policy == MULTIPLE_QUEUES)
+                    process_manager.process_table[non_blocked_process].state = READY;
+                    if (SCHEDULER == 1)
                     {
-                        do_scheduling(&management.scheduling, non_blocked_process, management.process_table[non_blocked_process].process.priority);
+                        do_scheduling(&(process_manager.scheduler), non_blocked_process, process_manager.process_table[non_blocked_process].priority);
                     }
-                    else if (management.type_escalation_policy == FCFS)
+                    else if (SCHEDULER == 2)
                     {
-                        to_queue(&management.ready, non_blocked_process);
+                        to_queue(&(process_manager.ready), non_blocked_process);
                     }
                 }
+
                 break;
-            case 'I':
-
-                if ((pid = fork()) == -1)
-                {
-                    printf("Fork error!!!\n");
-                    return;
-                }
-
-                if (pid == 0)
-                {
-                    print_management(&(management), size, number_of_process, time);
-                    return;
-                }
-                break;
-
             case 'M':
-                if ((pid = fork()) == -1)
+                /* Criar um processo de print_management */
+                if ((pid2 = fork()) == -1)
                 {
-                    printf("Fork error!!!\n");
-                    return;
+                    logger("Error in Fork!\n", ERROR_COLOR);
+                    return 1;
                 }
-                if (pid == 0)
+
+                if (pid2 == 0)
                 {
-                    print_management(&(management), size, number_of_process, time);
-                    printf("Mean time for the cycle --> %.2f", (float)management.time / time);
-                    return;
+                    print_management(&process_manager, size, total_of_process, max_process);
+                    printf("==========================\n");
+                    printf("Tempo médio de ciclo: %.2f\n", (float)process_manager.time / total_of_process);
+                    printf("==========================\n");
+
+                    exit(0);
                 }
 
                 exit(0);
             default:
-                printf("Not valid input!!!\n");
+                logger("\nError! Invalid Input\n", ERROR_COLOR);
                 break;
             }
-            if (management.time == MULTIPLE_QUEUES)
-            {
-                if (verify_quantum(&management))
+
+            /*                       ------> Escalonador <------                           */
+            if (SCHEDULER == 1)
+            { /* ESCALONAMENTO POR PRIORIDADES COM FILAS MÚLTIPLAS*/
+                if (verify_quantum(&process_manager))
                 {
                     int process_index;
                     int priority_process;
                     int next_process;
 
-                    process_index = management.executing_state;
-                    if (management.process_table[process_index].process.priority != 4)
+                    process_index = process_manager.executing_state;
+                    if (process_manager.process_table[process_index].priority != 4)
                     {
-                        management.process_table[process_index].process.priority += 1;
+                        process_manager.process_table[process_index].priority += 1;
                     }
-                    priority_process = management.process_table[process_index].process.priority;
+                    priority_process = process_manager.process_table[process_index].priority;
 
-                    do_scheduling(&(management.scheduling), process_index, priority_process);
+                    do_scheduling(&(process_manager.scheduler), process_index, priority_process);
 
-                    next_process = dequeue_scheduling(&(management.scheduling));
-                    change_context(&(management), next_process, READY);
+                    next_process = dequeue_scheduling(&(process_manager.scheduler));
+                    change_context(&(process_manager), next_process, READY);
                 }
-                else if (management.executing_state == -1)
+                else if (process_manager.executing_state == -1)
                 {
                     int next_process_i;
-                    next_process_i = dequeue_scheduling(&(management.scheduling));
+                    next_process_i = dequeue_scheduling(&(process_manager.scheduler));
                     if (next_process_i != -1)
                     {
-                        load_cpu_process(&(management), next_process_i);
+
+                        load_cpu_process(&(process_manager), next_process_i);
+                    }
+                }
+            }
+            else if (SCHEDULER == 2)
+            { /* ESCALONADOR POR FIFO */
+                if (process_manager.executing_state == -1)
+                { // caso não haja nenhum processo sendo executado
+                    int next_process_ii;
+                    next_process_ii = dequeue(&(process_manager.ready));
+                    if (next_process_ii != -1)
+                    {
+                        load_cpu_process(&(process_manager), next_process_ii);
                     }
                 }
             }
 
-            else if (management.time == FCFS)
-            {
-                if (management.executing_state == -1)
-                {
-                    int next_process_ii;
-                    next_process_ii = dequeue(&(management.ready));
-                    if (next_process_ii != -1)
-                    {
-                        load_cpu_process(&(management), next_process_ii);
-                    }
-                }
-            }
-        } while (input_command != 'M');
+        } while (process_command_control != 'M');
 
         close(fd[0]);
     }
+}
+
+void print_menu1()
+{
+    int i;
+    fputs(" ", stdout);
+    for (i = 0; i < 113; i++)
+    {
+        fputs("_", stdout);
+    }
+    printf("\n|");
+    for (i = 0; i < 113; i++)
+    {
+        fputs(" ", stdout);
+    }
+    printf("|\n|");
+    for (i = 0; i < 56; i++)
+    {
+        fputs(" ", stdout);
+    }
+    printf("MENU");
+    for (i = 0; i < 53; i++)
+    {
+        fputs(" ", stdout);
+    }
+    printf("|");
+    printf("\n");
+    printf("|");
+    for (i = 0; i < 113; i++)
+    {
+        fputs("_", stdout);
+    }
+    printf("|\n|");
+    for (i = 0; i < 113; i++)
+    {
+        fputs(" ", stdout);
+    }
+    printf("|\n|                                      ");
+    printf("(1) for file input or (2) for interative input");
+    for (i = 0; i < 29; i++)
+    {
+        fputs(" ", stdout);
+    }
+    printf("|");
+
+    printf("\n|");
+    for (i = 0; i < 113; i++)
+    {
+        fputs("_", stdout);
+    }
+    printf("|");
+    printf("\n");
+    printf("---------->");
+    fflush(stdin);
 }

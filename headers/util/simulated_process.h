@@ -3,15 +3,16 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+#include <limits.h>
 
-#include "./cpu.h"
+#include "./program.h"
 
 typedef struct
 {
-    program *program;
-    int* memory;
-    int number_of_vars;
-    int pc;
+    int *memory;        // ponteiro que será um vetor para representar a memoria que pode variar de acordo com a qnt de variaveis definidas (quantidade de instruções D)
+    int number_of_vars; // para identificar o tamanho do vetor de memória - para poder percorrer as variaveis referentes ao processo
+    int pc;             // define qual linha parou a leitura
+    program programa;
 } simulated_process;
 
 /*

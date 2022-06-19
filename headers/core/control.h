@@ -1,18 +1,11 @@
 #ifndef CONTROL_H
 #define CONTROL_H
 
-#define SIZE 50
+#define TAM 30
 
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-#include <time.h>
+#include "./management.h"
 
-#include "../../headers/util/process.h"
-
-/*
- * Função para calcular os comandos de controle (U L I M)
- */
-void control(int fd[]);
+void print_menu1();
+int control();
 
 #endif

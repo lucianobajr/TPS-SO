@@ -1,6 +1,7 @@
-#include "../headers/menu.h"
+#include "../headers/core/control.h"
 
-void main()
+int main()
 {
-    menu();
+
+    control();
 }
