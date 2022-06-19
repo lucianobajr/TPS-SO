@@ -13,6 +13,7 @@ void control(int fd[])
     int size = 1;
     int number_of_process = 1;
     int time = 0;
+    int max_process = -1;
     pid_t pid;
 
     file_pointer = fopen(file_name, "r");
@@ -46,32 +47,41 @@ void control(int fd[])
                 switch (instruction[0])
                 {
                 case 'N':
-                    
-                    break;
+                    instruction_n(atoi(&instruction[2]), &(management.cpu.memory));
+                    *(management.cpu.size_memory) = atoi(&instruction[2]);
                 case 'D':
-
-                    break;
+                    instruction_d(atoi(&instruction[2]), &management.cpu.memory);
                 case 'V':
-
-                    break;
+                    instruction_v(atoi(&instruction[2]), atoi(&instruction[4]), &management.cpu.memory);
                 case 'A':
-
-                    break;
+                    instruction_a(atoi(&instruction[2]), atoi(&instruction[4]), &management.cpu.memory);        
                 case 'S':
-
-                    break;
+                    instruction_s(atoi(&instruction[2]), atoi(&instruction[4]), &(management.cpu.memory));
                 case 'B':
-
-                    break;
+                    management.process_table[management.executing_state].process.state = 2;
+                    if (management.process_table[management.executing_state].process.priority > 0)
+                    {
+                        management.process_table[management.executing_state].process.priority -= 1;
+                    }
+                    to_queue(&management.blocked, management.executing_state);
+                    if (management.type_escalation_policy == MULTIPLE_QUEUES)
+                    {
+                        change_context(&management, dequeue_scheduling(&management.scheduling), BLOCKED);
+                    }
+                    else if(management.type_escalation_policy == FCFS)
+                    {
+                        change_context(&management, dequeue(&management.ready), BLOCKED);
+                    }
+                                      
                 case 'T':
-
-                    break;
+                    end_simulated_process(&management, &size, &max_process);
                 case 'F':
-
-                    break;
+                    size++;
+                    number_of_process++;
+                    create_new_process(atoi(&instruction[2]), &management, size, number_of_process - 1);
                 case 'R':
-
-                    break;
+                    replace_current_image_process(&management, instruction);
+                    
                 default:
                     break;
                 }
@@ -84,6 +94,14 @@ void control(int fd[])
                 if (blocked_process != -1)
                 {
                     management.process_table[blocked_process].process.state = READY;
+                    if (management.type_escalation_policy == MULTIPLE_QUEUES)
+                    {
+                        do_scheduling(&management.scheduling, blocked_process, management.process_table[blocked_process].process.priority);
+                    }
+                    else if (management.type_escalation_policy == FCFS)
+                    {
+                        to_queue(&management.ready, blocked_process);   
+                    }
                     // Needs to decide the schedulling
                     do_scheduling(&(management).scheduling, blocked_process, management.process_table[blocked_process].process.priority);
                 }
