@@ -1,6 +1,5 @@
 #include "../../headers/core/control.h"
 #include "../../headers/core/management.h"
-#define SIZE 50
 
 void control(int fd[])
 {
@@ -43,7 +42,7 @@ void control(int fd[])
                     management.cpu.pc++;
                 }
 
-                //Needs to add the N D V A S B T F R instructions
+                // Needs to add the N D V A S B T F R instructions
                 switch (instruction[0])
                 {
                 case 'N':
@@ -85,7 +84,6 @@ void control(int fd[])
                 default:
                     break;
                 }
-                
 
                 break;
             case 'L':
