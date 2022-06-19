@@ -11,7 +11,6 @@ void menu()
     if (pipe(fd) == -1)
     {
         printf("Pipe error!!!\n");
-        return 1;
     }
 
     print_menu1();
@@ -28,7 +27,6 @@ void menu()
     if ((pid = fork()) == -1)
     {
         printf("Fork error!!!\n");
-        return 1;
     }
 
     if (pid > 0)
@@ -60,7 +58,6 @@ void menu()
         } while (command != 'M');
         close(fd[1]);
         wait(NULL);
-        return 1;
     }
     else
     {

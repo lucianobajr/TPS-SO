@@ -1,5 +1,5 @@
 all:
-	gcc src/main.c src/menu.c -o dist/main
+	gcc src/main.c src/menu.c src/util/simulated_process.c src/shared/queue.c src/core/control.c src/core/management.c src/core/scheduling.c -o dist/main
 run:
 	dist/main
 clean:

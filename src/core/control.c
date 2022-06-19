@@ -14,6 +14,7 @@ void control(int fd[])
     int time = 0;
     int max_process = -1;
     pid_t pid;
+    int non_blocked_process;
 
     file_pointer = fopen(file_name, "r");
 
@@ -53,7 +54,7 @@ void control(int fd[])
                 case 'V':
                     instruction_v(atoi(&instruction[2]), atoi(&instruction[4]), &management.cpu.memory);
                 case 'A':
-                    instruction_a(atoi(&instruction[2]), atoi(&instruction[4]), &management.cpu.memory);        
+                    instruction_a(atoi(&instruction[2]), atoi(&instruction[4]), &management.cpu.memory);
                 case 'S':
                     instruction_s(atoi(&instruction[2]), atoi(&instruction[4]), &(management.cpu.memory));
                 case 'B':
@@ -67,41 +68,38 @@ void control(int fd[])
                     {
                         change_context(&management, dequeue_scheduling(&management.scheduling), BLOCKED);
                     }
-                    else if(management.type_escalation_policy == FCFS)
+                    else if (management.type_escalation_policy == FCFS)
                     {
                         change_context(&management, dequeue(&management.ready), BLOCKED);
                     }
-                                      
+
                 case 'T':
                     end_simulated_process(&management, &size, &max_process);
                 case 'F':
                     size++;
                     number_of_process++;
-                    create_new_process(atoi(&instruction[2]), &management, size, number_of_process - 1);
+                    create_new_process(&management, atoi(&instruction[2]), size, number_of_process - 1);
                 case 'R':
                     replace_current_image_process(&management, instruction);
-                    
                 default:
                     break;
                 }
 
                 break;
             case 'L':
-                int blocked_process = dequeue(&management.blocked);
+                non_blocked_process = dequeue(&management.blocked);
 
-                if (blocked_process != -1)
+                if (non_blocked_process != -1)
                 {
-                    management.process_table[blocked_process].process.state = READY;
+                    management.process_table[non_blocked_process].process.state = READY;
                     if (management.type_escalation_policy == MULTIPLE_QUEUES)
                     {
-                        do_scheduling(&management.scheduling, blocked_process, management.process_table[blocked_process].process.priority);
+                        do_scheduling(&management.scheduling, non_blocked_process, management.process_table[non_blocked_process].process.priority);
                     }
                     else if (management.type_escalation_policy == FCFS)
                     {
-                        to_queue(&management.ready, blocked_process);   
+                        to_queue(&management.ready, non_blocked_process);
                     }
-                    // Needs to decide the schedulling
-                    do_scheduling(&(management).scheduling, blocked_process, management.process_table[blocked_process].process.priority);
                 }
                 break;
             case 'I':
@@ -137,6 +135,51 @@ void control(int fd[])
                 printf("Not valid input!!!\n");
                 break;
             }
+            if (management.time == MULTIPLE_QUEUES)
+            {
+                if (verify_quantum(&management))
+                {
+                    int process_index;
+                    int priority_process;
+                    int next_process;
+
+                    process_index = management.executing_state;
+                    if (management.process_table[process_index].process.priority != 4)
+                    {
+                        management.process_table[process_index].process.priority += 1;
+                    }
+                    priority_process = management.process_table[process_index].process.priority;
+
+                    do_scheduling(&(management.scheduling), process_index, priority_process);
+
+                    next_process = dequeue_scheduling(&(management.scheduling));
+                    change_context(&(management), next_process, READY);
+                }
+                else if (management.executing_state == -1)
+                {
+                    int next_process_i;
+                    next_process_i = dequeue_scheduling(&(management.scheduling));
+                    if (next_process_i != -1)
+                    {
+                        load_cpu_process(&(management), next_process_i);
+                    }
+                }
+            }
+
+            else if (management.time == FCFS)
+            {
+                if (management.executing_state == -1)
+                {
+                    int next_process_ii;
+                    next_process_ii = dequeue(&(management.ready));
+                    if (next_process_ii != -1)
+                    {
+                        load_cpu_process(&(management), next_process_ii);
+                    }
+                }
+            }
         } while (input_command != 'M');
+
+        close(fd[0]);
     }
 }

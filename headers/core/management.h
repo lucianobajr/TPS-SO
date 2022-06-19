@@ -26,7 +26,7 @@ typedef struct
     queue blocked;
     int time;
     scheduling scheduling;
-    escalation_policy type_escalation_policy
+    escalation_policy type_escalation_policy;
 } management;
 
 /*

@@ -16,7 +16,7 @@ void init_management(management *management, char *file_name, int size, int type
     strcpy(new_simulated_process->program->file_name, file_name);
 
     // Registra o primeiro processo na tabela de processos
-    management->process_table[0].process.pc = &(new_simulated_process->pc);
+    management->process_table[0].process.pc = new_simulated_process->pc;
     management->process_table[0].process.simulated_process = new_simulated_process;
     management->process_table[0].process.inital_time = management->time;
     management->process_table[0].process.priority = 0;
@@ -43,10 +43,9 @@ char *read_instructions_file(cpu *cpu)
 
     if (file == NULL)
     {
-        pprintf("\033[38;5;1m");
+        printf("\033[38;5;1m");
         printf("Error! File not exists!\n");
         printf("\033[0m");
-        return;
     }
 
     while (counter <= cpu->pc)
@@ -87,7 +86,7 @@ void create_new_process(management *management, int number_of_instructions, int 
     management->cpu.pc = management->cpu.pc + number_of_instructions + 1;
 
     management->process_table = realloc(management->process_table, size * sizeof(process_table));
-    management->process_table[(size - 1)].process.pc = &(children->pc);
+    management->process_table[(size - 1)].process.pc = children->pc;
     management->process_table[(size - 1)].process.simulated_process = children;
     management->process_table[(size - 1)].process.inital_time = management->time;
     management->process_table[(size - 1)].process.pid = pid;

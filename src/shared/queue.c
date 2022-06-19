@@ -45,7 +45,7 @@ int dequeue(queue *queue)
     value = queue->front->index;
     free(aux);
 
-    return index;
+    return value;
 }
 
 void print_queue(queue *queue)

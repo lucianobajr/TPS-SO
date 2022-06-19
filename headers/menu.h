@@ -5,8 +5,9 @@
 
 #include <stdlib.h>
 #include <stdio.h>
+#include <sys/wait.h>
 
-#include "../core/control.h"
+#include "./core/control.h"
 
 /*
 * menu
