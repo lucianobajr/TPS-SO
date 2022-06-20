@@ -6,7 +6,7 @@ void instruction_n(int number_of_variable_to_declare, int **memory)
 
     for (int i = 0; i < number_of_variable_to_declare; i++)
     {
-        (*memory)[i] = __INT_MAX__;
+        (*memory)[i] = INT_MAX;
     }
 }
 
@@ -29,3 +29,4 @@ void instruction_s(int index, int value, int **memory)
 {
     (*memory)[index] = (*memory)[index] - value;
 }
+
