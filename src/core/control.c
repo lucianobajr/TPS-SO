@@ -195,58 +195,23 @@ int control()
             case 'I':
                 /* Criar um processo de Impressao */
                 command_i(pid2, process_manager, size, total_of_process, max_process);
-
                 break;
             case 'M':
                 command_m(pid2, process_manager, size, total_of_process, max_process);
+                break;
             default:
                 logger("\nError! Invalid Input\n", ERROR_COLOR);
                 break;
             }
 
-            /*                       ------> Escalonador <------                           */
+            /*                       ------> Scheduler <------                           */
             if (SCHEDULER == 1)
-            { /* ESCALONAMENTO POR PRIORIDADES COM FILAS MÚLTIPLAS*/
-                if (verify_quantum(&process_manager))
-                {
-                    int process_index;
-                    int priority_process;
-                    int next_process;
-
-                    process_index = process_manager.executing_state;
-                    if (process_manager.process_table[process_index].priority != 4)
-                    {
-                        process_manager.process_table[process_index].priority += 1;
-                    }
-                    priority_process = process_manager.process_table[process_index].priority;
-
-                    do_scheduling(&(process_manager.scheduler), process_index, priority_process);
-
-                    next_process = dequeue_scheduling(&(process_manager.scheduler));
-                    change_context(&(process_manager), next_process, READY);
-                }
-                else if (process_manager.executing_state == -1)
-                {
-                    int next_process_i;
-                    next_process_i = dequeue_scheduling(&(process_manager.scheduler));
-                    if (next_process_i != -1)
-                    {
-
-                        load_cpu_process(&(process_manager), next_process_i);
-                    }
-                }
+            { /* MULTIPLE LEVEL QUEUES SCHEDULLING*/
+                multiple_queues(process_manager);
             }
             else if (SCHEDULER == 2)
-            { /* ESCALONADOR POR FIFO */
-                if (process_manager.executing_state == -1)
-                { // caso não haja nenhum processo sendo executado
-                    int next_process_ii;
-                    next_process_ii = dequeue(&(process_manager.ready));
-                    if (next_process_ii != -1)
-                    {
-                        load_cpu_process(&(process_manager), next_process_ii);
-                    }
-                }
+            { /* FCFS SCHEDULLING */
+                FCFS(process_manager);
             }
 
         } while (process_command_control != 'M');
@@ -271,76 +236,6 @@ void instruction_b(management process_manager)
     else if (SCHEDULER == 2)
     {
         change_context(&(process_manager), dequeue(&(process_manager.ready)), BLOCKED);
-    }
-}
-
-void command_u(management *process_manager, int *size, int *total_of_process, int max_process)
-{
-    char instruction[30];
-
-    /** Fim de uma unidade de tempo*/
-    process_manager.time++;
-    /* Verifica se há um processo na CPU no momento*/
-    if (process_manager.executing_state != -1)
-    {
-        process_manager.cpu.time++;
-        strcpy(instruction, read_instructions_file(&(process_manager.cpu)));
-
-        if (instruction[0] != 'F' && instruction[0] != 'R')
-        {
-            process_manager.cpu.pc++;
-        }
-
-        if (DEBUG)
-        {
-            printf("---------------------------------------------------------\n");
-            printf("Current file name: %s\n", process_manager.cpu.program->file_name);
-            printf("Current input: ---> %d\n", process_manager.executing_state);
-            printf("Counter: --> %d, Instruction: --> %s", process_manager.cpu.pc, instruction);
-            printf("Priority: --> %d\n", process_manager.process_table[process_manager.executing_state].priority);
-            printf("---------------------------------------------------------\n");
-        }
-    }
-    else
-    {
-        strcpy(instruction, "0");
-    }
-
-    switch (instruction[0])
-    {
-    case 'N':
-        instruction_n(atoi(&(instruction[2])), &(process_manager.cpu.memory));
-        *(process_manager.cpu.size_memory) = atoi(&(instruction[2]));
-        break;
-    case 'D':
-        instruction_d(atoi(&(instruction[2])), &(process_manager.cpu.memory));
-        break;
-    case 'V':
-        instruction_v(atoi(&(instruction[2])), atoi(&(instruction[4])), &(process_manager.cpu.memory));
-        break;
-    case 'A':
-        instruction_a(atoi(&(instruction[2])), atoi(&(instruction[4])), &(process_manager.cpu.memory));
-        break;
-    case 'S':
-        instruction_s(atoi(&(instruction[2])), atoi(&(instruction[4])), &(process_manager.cpu.memory));
-        break;
-    case 'B':
-        instruction_b(process_manager);
-        break;
-    case 'T':
-        end_simulated_process(&(process_manager), size, &max_process);
-        break;
-    case 'F':
-        *(size)++;
-        *(total_of_process)++;
-        create_new_process(&process_manager, atoi(&(instruction[2])), *(size), *(total_of_process)-1);
-        break;
-    case 'R':
-        replace_current_image_process(&process_manager, instruction);
-        break;
-    default:
-        logger("Invalid input!!!", ERROR_COLOR);
-        break;
     }
 }
 

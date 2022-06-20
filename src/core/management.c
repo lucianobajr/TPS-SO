@@ -163,7 +163,7 @@ void replace_current_image_process(management *management, char *instruction)
     int response = (instruction[2] == '.' && instruction[3] == '/' && instruction[4] == 'd' && instruction[5] == 'a' && instruction[6] == 't' && instruction[7] == 'a' && instruction[8] == '/');
 
     // Copiando nome do arquivo
-    
+
     if (response)
     {
         for (k = 2; k < (strlen(instruction)); k++)
@@ -400,5 +400,50 @@ int verify_quantum(management *management)
     else
     {
         return 0;
+    }
+}
+
+void multiple_queues(management management)
+{
+    if (verify_quantum(&management))
+    {
+        int process_index;
+        int priority_process;
+        int next_process;
+
+        process_index = management.executing_state;
+        if (management.process_table[process_index].priority != 4)
+        {
+            management.process_table[process_index].priority += 1;
+        }
+        priority_process = management.process_table[process_index].priority;
+
+        do_scheduling(&(management.scheduler), process_index, priority_process);
+
+        next_process = dequeue_scheduling(&(management.scheduler));
+        change_context(&(management), next_process, READY);
+    }
+    else if (management.executing_state == -1)
+    {
+        int next_process_i;
+        next_process_i = dequeue_scheduling(&(management.scheduler));
+        if (next_process_i != -1)
+        {
+
+            load_cpu_process(&(management), next_process_i);
+        }
+    }
+}
+
+void FCFS(management management)
+{
+    if (management.executing_state == -1)
+    { // caso não haja nenhum processo sendo executado
+        int next_process_ii;
+        next_process_ii = dequeue(&(management.ready));
+        if (next_process_ii != -1)
+        {
+            load_cpu_process(&(management), next_process_ii);
+        }
     }
 }
