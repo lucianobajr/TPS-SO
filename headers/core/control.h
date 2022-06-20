@@ -4,6 +4,7 @@
 #define TAM 30
 
 #include "./management.h"
+#include "./scheduling.h"
 
 /*
  * Primeiro print menu

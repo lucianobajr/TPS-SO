@@ -74,4 +74,13 @@ void print_management(management *management, int size, int number_of_process, i
  */
 int verify_quantum(management *management);
 
+/*
+ * Multiple-Level Queues 
+ */
+void multiple_queues(management management);
+/*
+ * First Come First Serve (FCFS)
+ */
+void first_come_first_serve(management management);
+
 #endif

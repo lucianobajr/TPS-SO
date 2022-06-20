@@ -99,7 +99,7 @@ int control(scheduller_policy type_escalation_policy)
 
         close(fd[1]); // fecha o pipe de escrita para não ter risco de leak de memoria - ou dar outra coisa ruim pois é uma chamada de sistema
 
-        init_management(&process_manager, name, size, FCFS);
+        init_management(&process_manager, name, size, type_escalation_policy);
 
         do
         {
@@ -199,54 +199,20 @@ int control(scheduller_policy type_escalation_policy)
                 break;
             case 'M':
                 command_m(pid2, process_manager, size, total_of_process, max_process);
+                break;
             default:
                 logger("\nError! Invalid Input\n", ERROR_COLOR);
                 break;
             }
 
-            /*                       ------> Escalonador <------                           */
-            if (process_manager.type_escalation_policy == MULTIPLE_QUEUES)
-            { /* ESCALONAMENTO POR PRIORIDADES COM FILAS MÚLTIPLAS*/
-                if (verify_quantum(&process_manager))
-                {
-                    int process_index;
-                    int priority_process;
-                    int next_process;
-
-                    process_index = process_manager.executing_state;
-                    if (process_manager.process_table[process_index].priority != 4)
-                    {
-                        process_manager.process_table[process_index].priority += 1;
-                    }
-                    priority_process = process_manager.process_table[process_index].priority;
-
-                    do_scheduling(&(process_manager.scheduler), process_index, priority_process);
-
-                    next_process = dequeue_scheduling(&(process_manager.scheduler));
-                    change_context(&(process_manager), next_process, READY);
-                }
-                else if (process_manager.executing_state == -1)
-                {
-                    int next_process_i;
-                    next_process_i = dequeue_scheduling(&(process_manager.scheduler));
-                    if (next_process_i != -1)
-                    {
-
-                        load_cpu_process(&(process_manager), next_process_i);
-                    }
-                }
+            /*                       ------> Scheduler <------                           */
+            if (SCHEDULER == 1)
+            { /* MULTIPLE LEVEL QUEUES SCHEDULLING*/
+                multiple_queues(process_manager);
             }
-            else if (process_manager.type_escalation_policy == FCFS)
-            { /* ESCALONADOR POR FIFO */
-                if (process_manager.executing_state == -1)
-                { // caso não haja nenhum processo sendo executado
-                    int next_process_ii;
-                    next_process_ii = dequeue(&(process_manager.ready));
-                    if (next_process_ii != -1)
-                    {
-                        load_cpu_process(&(process_manager), next_process_ii);
-                    }
-                }
+            else if (SCHEDULER == 2)
+            { /* FCFS SCHEDULLING */
+                first_come_first_serve(process_manager);
             }
 
         } while (process_command_control != 'M');
