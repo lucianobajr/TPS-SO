@@ -9,6 +9,12 @@
 #include "../util/process_table.h"
 #include "../log/log.h"
 
+typedef enum
+{
+    MULTIPLE_QUEUES,
+    FCFS
+} scheduller_policy;
+
 typedef struct
 {
     CPU cpu;
@@ -18,12 +24,13 @@ typedef struct
     queue blocked;                // enfileira os indices dos processos em estado de bloqueio
     scheduling scheduler;       
     int time;                    // incrementado a cada instrução lida
+    scheduller_policy type_escalation_policy;
 } management;
 
 /*
  * Inicializa o Gerenciador de Processos
  */
-void init_management(management *management, char *file_name, int size);
+void init_management(management *management, char *file_name, int size, scheduller_policy type_escalation_policy);
 
 /*
  * Leitura do arquivo de instruções

@@ -13,7 +13,7 @@ void print_menu1();
 /*
  * Processo Controle
  */
-int control();
+int control(scheduller_policy type_escalation_policy);
 
 /*
 * Substitui o programa do processo simulado pelo programa
@@ -36,10 +36,5 @@ void command_l(int non_blocked_process, management process_manager);
 * Imprime o estado atual do sistema
 */
 void command_i(pid_t pid, management management, int size, int total_of_process, int max_process);
-
-/*
-* Fim de uma unidade de tempo
-*/
-void command_u(management process_manager, int *size, int *total_of_process, int max_process);
 
 #endif

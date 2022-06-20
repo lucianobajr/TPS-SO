@@ -1,6 +1,6 @@
 #include "../../headers/core/management.h"
 
-void init_management(management *management, char *file_name, int size)
+void init_management(management *management, char *file_name, int size,scheduller_policy type_escalation_policy)
 {
     management->time = 0;
     management->process_table = (process_table *)malloc(sizeof(process_table));
@@ -28,6 +28,7 @@ void init_management(management *management, char *file_name, int size)
     management->cpu.memory = NULL;
     management->cpu.time = 0;
     management->cpu.size_memory = &(processo->number_of_vars);
+    management->type_escalation_policy = type_escalation_policy;
 }
 
 char *read_instructions_file(CPU *cpu)

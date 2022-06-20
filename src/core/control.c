@@ -1,6 +1,6 @@
 #include "../../headers/core/control.h"
 
-int control()
+int control(scheduller_policy type_escalation_policy)
 {
     FILE *file;
     char file_name[TAM];
@@ -88,7 +88,7 @@ int control()
         management process_manager;
         // Recebe os comandos do processo controle e processa eles
         char process_command_control; // Variável para receber o comando do processo Controle
-        char *name = "./data/init-2.txt";
+        char *name = "./data/init.txt";
         char *instruction = (char *)malloc(sizeof(char) * 30);
         int size = 1;             // Tabela de processos (1 porque é o primeiro processo) - pode variar de acordo com a qnt de processos atual (se for encerrado é retirado da tabela)
         int global_time = 0;      // inicializando a contagem de unidade de tempo (instruções) do gerenciador
@@ -99,7 +99,7 @@ int control()
 
         close(fd[1]); // fecha o pipe de escrita para não ter risco de leak de memoria - ou dar outra coisa ruim pois é uma chamada de sistema
 
-        init_management(&process_manager, name, size);
+        init_management(&process_manager, name, size, FCFS);
 
         do
         {
@@ -107,6 +107,9 @@ int control()
 
             switch (process_command_control)
             {
+            /*
+             * Fim de uma unidade de tempo
+             */
             case 'U':
                 /* Incrementando o tempo*/
                 global_time++;
@@ -114,7 +117,6 @@ int control()
                 /* Verifica se há um processo na CPU no momento*/
                 if (process_manager.executing_state != -1)
                 {
-
                     process_manager.cpu.time++;
                     strcpy(instruction, read_instructions_file(&(process_manager.cpu)));
 
@@ -164,11 +166,11 @@ int control()
                     }
                     to_queue(&(process_manager.blocked), process_manager.executing_state);
 
-                    if (SCHEDULER == 1)
+                    if (process_manager.type_escalation_policy == MULTIPLE_QUEUES)
                     {
                         change_context(&(process_manager), dequeue_scheduling(&(process_manager.scheduler)), BLOCKED);
                     }
-                    else if (SCHEDULER == 2)
+                    else if (process_manager.type_escalation_policy == FCFS)
                     {
                         change_context(&(process_manager), dequeue(&(process_manager.ready)), BLOCKED);
                     }
@@ -192,10 +194,8 @@ int control()
             case 'L':
                 command_l(non_blocked_process, process_manager);
                 break;
-            case 'I':
-                /* Criar um processo de Impressao */
+            case 'I': /* Criar um processo de Impressao */
                 command_i(pid2, process_manager, size, total_of_process, max_process);
-
                 break;
             case 'M':
                 command_m(pid2, process_manager, size, total_of_process, max_process);
@@ -205,7 +205,7 @@ int control()
             }
 
             /*                       ------> Escalonador <------                           */
-            if (SCHEDULER == 1)
+            if (process_manager.type_escalation_policy == MULTIPLE_QUEUES)
             { /* ESCALONAMENTO POR PRIORIDADES COM FILAS MÚLTIPLAS*/
                 if (verify_quantum(&process_manager))
                 {
@@ -236,7 +236,7 @@ int control()
                     }
                 }
             }
-            else if (SCHEDULER == 2)
+            else if (process_manager.type_escalation_policy == FCFS)
             { /* ESCALONADOR POR FIFO */
                 if (process_manager.executing_state == -1)
                 { // caso não haja nenhum processo sendo executado
@@ -264,83 +264,13 @@ void instruction_b(management process_manager)
     }
     to_queue(&(process_manager.blocked), process_manager.executing_state);
 
-    if (SCHEDULER == 1)
+    if (process_manager.type_escalation_policy == MULTIPLE_QUEUES)
     {
         change_context(&(process_manager), dequeue_scheduling(&(process_manager.scheduler)), BLOCKED);
     }
-    else if (SCHEDULER == 2)
+    else if (process_manager.type_escalation_policy == FCFS)
     {
         change_context(&(process_manager), dequeue(&(process_manager.ready)), BLOCKED);
-    }
-}
-
-void command_u(management *process_manager, int *size, int *total_of_process, int max_process)
-{
-    char instruction[30];
-
-    /** Fim de uma unidade de tempo*/
-    process_manager.time++;
-    /* Verifica se há um processo na CPU no momento*/
-    if (process_manager.executing_state != -1)
-    {
-        process_manager.cpu.time++;
-        strcpy(instruction, read_instructions_file(&(process_manager.cpu)));
-
-        if (instruction[0] != 'F' && instruction[0] != 'R')
-        {
-            process_manager.cpu.pc++;
-        }
-
-        if (DEBUG)
-        {
-            printf("---------------------------------------------------------\n");
-            printf("Current file name: %s\n", process_manager.cpu.program->file_name);
-            printf("Current input: ---> %d\n", process_manager.executing_state);
-            printf("Counter: --> %d, Instruction: --> %s", process_manager.cpu.pc, instruction);
-            printf("Priority: --> %d\n", process_manager.process_table[process_manager.executing_state].priority);
-            printf("---------------------------------------------------------\n");
-        }
-    }
-    else
-    {
-        strcpy(instruction, "0");
-    }
-
-    switch (instruction[0])
-    {
-    case 'N':
-        instruction_n(atoi(&(instruction[2])), &(process_manager.cpu.memory));
-        *(process_manager.cpu.size_memory) = atoi(&(instruction[2]));
-        break;
-    case 'D':
-        instruction_d(atoi(&(instruction[2])), &(process_manager.cpu.memory));
-        break;
-    case 'V':
-        instruction_v(atoi(&(instruction[2])), atoi(&(instruction[4])), &(process_manager.cpu.memory));
-        break;
-    case 'A':
-        instruction_a(atoi(&(instruction[2])), atoi(&(instruction[4])), &(process_manager.cpu.memory));
-        break;
-    case 'S':
-        instruction_s(atoi(&(instruction[2])), atoi(&(instruction[4])), &(process_manager.cpu.memory));
-        break;
-    case 'B':
-        instruction_b(process_manager);
-        break;
-    case 'T':
-        end_simulated_process(&(process_manager), size, &max_process);
-        break;
-    case 'F':
-        *(size)++;
-        *(total_of_process)++;
-        create_new_process(&process_manager, atoi(&(instruction[2])), *(size), *(total_of_process)-1);
-        break;
-    case 'R':
-        replace_current_image_process(&process_manager, instruction);
-        break;
-    default:
-        logger("Invalid input!!!", ERROR_COLOR);
-        break;
     }
 }
 
@@ -386,11 +316,11 @@ void command_l(int non_blocked_process, management process_manager)
     if (non_blocked_process != -1)
     {
         process_manager.process_table[non_blocked_process].state = READY;
-        if (SCHEDULER == 1)
+        if (process_manager.type_escalation_policy == MULTIPLE_QUEUES)
         {
             do_scheduling(&(process_manager.scheduler), non_blocked_process, process_manager.process_table[non_blocked_process].priority);
         }
-        else if (SCHEDULER == 2)
+        else if (process_manager.type_escalation_policy == FCFS)
         {
             to_queue(&(process_manager.ready), non_blocked_process);
         }
