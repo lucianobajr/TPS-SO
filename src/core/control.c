@@ -128,30 +128,25 @@ int control()
                     strcpy(instruction, "0");
                 }
 
-                if (instruction[0] == 'N')
+                switch (instruction[0])
                 {
+                case 'N':
                     instruction_n(atoi(&(instruction[2])), &(process_manager.cpu.memory));
                     *(process_manager.cpu.size_memory) = atoi(&(instruction[2]));
-                }
-                else if (instruction[0] == 'D')
-                {
+                    break;
+                case 'D':
                     instruction_d(atoi(&(instruction[2])), &(process_manager.cpu.memory));
-                }
-                else if (instruction[0] == 'V')
-                {
+                    break;
+                case 'V':
                     instruction_v(atoi(&(instruction[2])), atoi(&(instruction[4])), &(process_manager.cpu.memory));
-                }
-                else if (instruction[0] == 'A')
-                {
+                    break;
+                case 'A':
                     instruction_a(atoi(&(instruction[2])), atoi(&(instruction[4])), &(process_manager.cpu.memory));
-                }
-                else if (instruction[0] == 'S')
-                {
+                    break;
+                case 'S':
                     instruction_s(atoi(&(instruction[2])), atoi(&(instruction[4])), &(process_manager.cpu.memory));
-                }
-                else if (instruction[0] == 'B')
-                {
-
+                    break;
+                case 'B':
                     process_manager.process_table[process_manager.executing_state].state = BLOCKED;
                     if (process_manager.process_table[process_manager.executing_state].priority > 0)
                     {
@@ -167,21 +162,21 @@ int control()
                     {
                         change_context(&(process_manager), dequeue(&(process_manager.ready)), BLOCKED);
                     }
-                }
-                else if (instruction[0] == 'T')
-                {
+                    break;
+                case 'T':
                     end_simulated_process(&(process_manager), &size, &max_process);
-                }
-                else if (instruction[0] == 'F')
-                {
+                    break;
+                case 'F':
                     size++;
                     total_of_process++;
                     create_new_process(&process_manager, atoi(&(instruction[2])), size, total_of_process - 1);
-                }
-                else if (instruction[0] == 'R')
-                { // Substituir imagem
-
+                    break;
+                case 'R':
                     replace_current_image_process(&process_manager, instruction);
+                    break;
+                default:
+                    logger("Invalid input!!!", ERROR_COLOR);
+                    break;
                 }
 
                 break;
