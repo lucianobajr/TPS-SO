@@ -180,22 +180,6 @@ int control()
                 }
 
                 break;
-            case 'I':
-
-                /* Criar um processo de Impressao */
-                if ((pid2 = fork()) == -1)
-                {
-                    printf("Error fork\n");
-                    return 1;
-                }
-
-                if (pid2 == 0)
-                {
-                    print_management(&process_manager, size, total_of_process, max_process);
-                    exit(0);
-                }
-
-                break;
             case 'L':
                 non_blocked_process = dequeue(&(process_manager.blocked));
 
@@ -211,6 +195,11 @@ int control()
                         to_queue(&(process_manager.ready), non_blocked_process);
                     }
                 }
+
+                break;
+            case 'I':
+                /* Criar um processo de Impressao */
+                command_i(pid2, process_manager, size, total_of_process, max_process);
 
                 break;
             case 'M':
@@ -340,4 +329,18 @@ void print_menu1()
     printf("\n");
     printf("---------->");
     fflush(stdin);
+}
+
+void command_i(pid_t pid, management management, int size, int total_of_process, int max_process)
+{
+    if ((pid = fork()) == -1)
+    {
+        printf("Error fork\n");
+    }
+
+    if (pid == 0)
+    {
+        print_management(&management, size, total_of_process, max_process);
+        exit(0);
+    }
 }
