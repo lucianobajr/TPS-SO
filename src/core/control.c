@@ -22,7 +22,7 @@ int control()
 
         do
         {
-            printf("Insira o name do arquivo: \n");
+            printf("Insert the file name: \n");
             printf("----------> ");
             scanf("%s", file_name);
             file = fopen(file_name, "r");
@@ -47,7 +47,7 @@ int control()
 
         if (input_type == 2)
         { // ENTRADA MANUAL
-            printf("\nComandos:\n");
+            printf("\nCommands:\n");
         }
         do
         {
@@ -116,10 +116,10 @@ int control()
                     if (DEBUG)
                     {
                         printf("---------------------------------------------------------\n");
-                        printf("Nome arquivo atual: %s\n", process_manager.cpu.program->file_name);
-                        printf("Entrada atual: ---> %d\n", process_manager.executing_state);
-                        printf("Contador: --> %d, Instrucao: --> %s", process_manager.cpu.pc, instruction);
-                        printf("Prioridade: --> %d\n", process_manager.process_table[process_manager.executing_state].priority);
+                        printf("Current file name: %s\n", process_manager.cpu.program->file_name);
+                        printf("Current input: ---> %d\n", process_manager.executing_state);
+                        printf("Counter: --> %d, Instruction: --> %s", process_manager.cpu.pc, instruction);
+                        printf("Priority: --> %d\n", process_manager.process_table[process_manager.executing_state].priority);
                         printf("---------------------------------------------------------\n");
                     }
                 }
@@ -230,7 +230,7 @@ int control()
                 {
                     print_management(&process_manager, size, total_of_process, max_process);
                     printf("==========================\n");
-                    printf("Tempo médio de ciclo: %.2f\n", (float)process_manager.time / total_of_process);
+                    printf("Average time per cycle: %.2f\n", (float)process_manager.time / total_of_process);
                     printf("==========================\n");
 
                     exit(0);
