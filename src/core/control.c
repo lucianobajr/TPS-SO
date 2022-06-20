@@ -108,13 +108,94 @@ int control()
             switch (process_command_control)
             {
             case 'U':
-                command_u(process_manager, &size, &total_of_process, max_process);
-                break;
-            case 'I':
-                command_i(pid2, process_manager, size, total_of_process, max_process);
+                /* Incrementando o tempo*/
+                global_time++;
+                process_manager.time++;
+                /* Verifica se há um processo na CPU no momento*/
+                if (process_manager.executing_state != -1)
+                {
+
+                    process_manager.cpu.time++;
+                    strcpy(instruction, read_instructions_file(&(process_manager.cpu)));
+
+                    if (instruction[0] != 'F' && instruction[0] != 'R')
+                    {
+                        process_manager.cpu.pc++;
+                    }
+
+                    if (DEBUG)
+                    {
+                        printf("---------------------------------------------------------\n");
+                        printf("Current file name: %s\n", process_manager.cpu.program->file_name);
+                        printf("Current input: ---> %d\n", process_manager.executing_state);
+                        printf("Counter: --> %d, Instruction: --> %s", process_manager.cpu.pc, instruction);
+                        printf("Priority: --> %d\n", process_manager.process_table[process_manager.executing_state].priority);
+                        printf("---------------------------------------------------------\n");
+                    }
+                }
+                else
+                {
+                    strcpy(instruction, "0");
+                }
+
+                switch (instruction[0])
+                {
+                case 'N':
+                    instruction_n(atoi(&(instruction[2])), &(process_manager.cpu.memory));
+                    *(process_manager.cpu.size_memory) = atoi(&(instruction[2]));
+                    break;
+                case 'D':
+                    instruction_d(atoi(&(instruction[2])), &(process_manager.cpu.memory));
+                    break;
+                case 'V':
+                    instruction_v(atoi(&(instruction[2])), atoi(&(instruction[4])), &(process_manager.cpu.memory));
+                    break;
+                case 'A':
+                    instruction_a(atoi(&(instruction[2])), atoi(&(instruction[4])), &(process_manager.cpu.memory));
+                    break;
+                case 'S':
+                    instruction_s(atoi(&(instruction[2])), atoi(&(instruction[4])), &(process_manager.cpu.memory));
+                    break;
+                case 'B':
+                    process_manager.process_table[process_manager.executing_state].state = BLOCKED;
+                    if (process_manager.process_table[process_manager.executing_state].priority > 0)
+                    {
+                        process_manager.process_table[process_manager.executing_state].priority -= 1;
+                    }
+                    to_queue(&(process_manager.blocked), process_manager.executing_state);
+
+                    if (SCHEDULER == 1)
+                    {
+                        change_context(&(process_manager), dequeue_scheduling(&(process_manager.scheduler)), BLOCKED);
+                    }
+                    else if (SCHEDULER == 2)
+                    {
+                        change_context(&(process_manager), dequeue(&(process_manager.ready)), BLOCKED);
+                    }
+                    break;
+                case 'T':
+                    end_simulated_process(&(process_manager), &size, &max_process);
+                    break;
+                case 'F':
+                    size++;
+                    total_of_process++;
+                    create_new_process(&process_manager, atoi(&(instruction[2])), size, total_of_process - 1);
+                    break;
+                case 'R':
+                    replace_current_image_process(&process_manager, instruction);
+                    break;
+                default:
+                    logger("Invalid input!!!", ERROR_COLOR);
+                    break;
+                }
                 break;
             case 'L':
                 command_l(non_blocked_process, process_manager);
+                break;
+            case 'I':
+                /* Criar um processo de Impressao */
+                command_i(pid2, process_manager, size, total_of_process, max_process);
+
                 break;
             case 'M':
                 command_m(pid2, process_manager, size, total_of_process, max_process);
@@ -193,7 +274,7 @@ void instruction_b(management process_manager)
     }
 }
 
-void command_u(management process_manager, int *size, int *total_of_process, int max_process)
+void command_u(management *process_manager, int *size, int *total_of_process, int max_process)
 {
     char instruction[30];
 
@@ -252,7 +333,7 @@ void command_u(management process_manager, int *size, int *total_of_process, int
     case 'F':
         *(size)++;
         *(total_of_process)++;
-        create_new_process(&process_manager, atoi(&(instruction[2])), *(size), *(total_of_process) - 1);
+        create_new_process(&process_manager, atoi(&(instruction[2])), *(size), *(total_of_process)-1);
         break;
     case 'R':
         replace_current_image_process(&process_manager, instruction);
