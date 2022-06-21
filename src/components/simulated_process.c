@@ -1,4 +1,4 @@
-#include "../../headers/util/simulated_process.h"
+#include "../../headers/components/simulated_process.h"
 
 void instruction_n(int number_of_variable_to_declare, int **memory)
 {

@@ -5,8 +5,8 @@
 #define DEBUG 1
 
 #include "./scheduling.h"
-#include "../util/cpu.h"
-#include "../util/process_table.h"
+#include "../components/cpu.h"
+#include "../components/process_table.h"
 #include "../log/log.h"
 
 typedef enum
