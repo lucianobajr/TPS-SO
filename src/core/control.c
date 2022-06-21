@@ -52,7 +52,7 @@ int control(scheduller_policy type_escalation_policy)
 
     if (pid > 0)
     { /* Execução processo pai */ // O PROCESSO PAI SERÁ O PROCESSO CONTROLE
-        char comando;
+        char command;
         close(fd[0]); // fecha a leitura do pipe pq o processo controle irá apenas escrever
 
         if (input_type == 2)
@@ -63,19 +63,19 @@ int control(scheduller_policy type_escalation_policy)
         {
             if (input_type == 1)
             { // ENTRADA POR ARQUIVO
-                fscanf(file, " %c", &comando);
+                fscanf(file, " %c", &command);
                 printf("---------->\n");
             }
             else
             {
                 printf("---------->");
-                scanf(" %c", &comando);
+                scanf(" %c", &command);
             }
 
-            write(fd[1], &comando, sizeof(comando)); // abre a leitura do pipe pra enviar os comandos para o processo gerenciador de processos
+            write(fd[1], &command, sizeof(command)); // abre a leitura do pipe pra enviar os comandos para o processo gerenciador de processos
             if (input_type == 1)
                 sleep(1); // coloca o sistema em modo de espera para que seja possível ver os resultados
-        } while (comando != 'M');
+        } while (command != 'M');
 
         close(fd[1]); // fecha o pipe de escrita para não ter risco de leak de memoria - ou dar outra coisa ruim pois é uma chamada de sistema
         wait(NULL);
@@ -89,7 +89,7 @@ int control(scheduller_policy type_escalation_policy)
         // Recebe os comandos do processo controle e processa eles
         char process_command_control; // Variável para receber o comando do processo Controle
         char *name = "./data/init-2.txt";
-        char *instruction = (char *)malloc(sizeof(char) * 30);
+        char instruction[50];
         int size = 1;             // Tabela de processos (1 porque é o primeiro processo) - pode variar de acordo com a qnt de processos atual (se for encerrado é retirado da tabela)
         int global_time = 0;      // inicializando a contagem de unidade de tempo (instruções) do gerenciador
         int total_of_process = 1; /* todos os processos, independente de terem sido encerrados ou não*/
@@ -130,7 +130,7 @@ int control(scheduller_policy type_escalation_policy)
                         printf("---------------------------------------------------------\n");
                         printf("Current file name: %s\n", process_manager.cpu.program->file_name);
                         printf("Current input: ---> %d\n", process_manager.executing_state);
-                        printf("Counter: --> %d, Instruction: --> %s\n", process_manager.cpu.pc, instruction);
+                        printf("Counter: --> %d, Instruction: --> %s", process_manager.cpu.pc, instruction);
                         printf("Priority: --> %d\n", process_manager.process_table[process_manager.executing_state].priority);
                         printf("---------------------------------------------------------\n");
                     }
@@ -345,6 +345,6 @@ void print_menu1()
     }
     printf("|");
     printf("\n");
-    printf("---------->");
+    printf("----------> ");
     fflush(stdin);
 }

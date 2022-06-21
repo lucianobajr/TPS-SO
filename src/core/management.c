@@ -49,7 +49,7 @@ char *read_instructions_file(CPU *cpu)
 
     if (DEBUG)
     {
-        logger("\n==========================\n", DEBUG_COLOR);
+        logger("\n==========================\n\n", DEBUG_COLOR);
     }
     while (counter <= cpu->pc)
     {
@@ -59,8 +59,8 @@ char *read_instructions_file(CPU *cpu)
         if (DEBUG)
         {
             printf("\033[38;5;3m");
-            printf("current line: %s", line);
-            printf("\n\033[0m");
+            printf("current line: %s\n", line);
+            printf("\033[0m");
         }
         counter++;
     }
@@ -160,15 +160,37 @@ void change_context(management *management, int index_next_process, int initial_
 void replace_current_image_process(management *management, char *instruction)
 {
     int k;
+    int response = (instruction[2] == '.' && instruction[3] == '/' && instruction[4] == 'd' && instruction[5] == 'a' && instruction[6] == 't' && instruction[7] == 'a' && instruction[8] == '/');
 
     // Copiando nome do arquivo
-    for (k = 2; k < (strlen(instruction)); k++)
+
+    if (response)
     {
-        management->cpu.program->file_name[k - 2] = instruction[k];
+        for (k = 2; k < (strlen(instruction)); k++)
+        {
+            management->cpu.program->file_name[k - 2] = instruction[k];
+        }
+    }
+    else
+    {
+        // adicionando o path dos arquivos
+        management->cpu.program->file_name[0] = '.';
+        management->cpu.program->file_name[1] = '/';
+        management->cpu.program->file_name[2] = 'd';
+        management->cpu.program->file_name[3] = 'a';
+        management->cpu.program->file_name[4] = 't';
+        management->cpu.program->file_name[5] = 'a';
+        management->cpu.program->file_name[6] = '/';
+
+        for (k = 2; k < (strlen(instruction)); k++)
+        {
+            management->cpu.program->file_name[(k - 2) + 7] = instruction[k];
+        }
     }
 
     // Colocando o '\0' para indicar fim de string
-    k = 1;
+
+    k = !response ? 1 : 0;
     while (1)
     {
         if (management->cpu.program->file_name[k] == '.')
