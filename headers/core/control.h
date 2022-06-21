@@ -14,7 +14,7 @@ void print_menu1();
 /*
  * Processo Controle
  */
-int control(scheduller_policy type_escalation_policy);
+int control(scheduler_policy type_escalation_policy);
 
 /*
 * Substitui o programa do processo simulado pelo programa

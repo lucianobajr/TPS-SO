@@ -2,7 +2,7 @@
 
 int main(int argc, char const *argv[])
 {
-    scheduller_policy type_escalation_policy;
+    scheduler_policy type_escalation_policy;
 
     if (!argv[1])
     {

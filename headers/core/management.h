@@ -13,7 +13,7 @@ typedef enum
 {
     MULTIPLE_QUEUES,
     FCFS
-} scheduller_policy;
+} scheduler_policy;
 
 typedef struct
 {
@@ -24,13 +24,13 @@ typedef struct
     queue blocked;                // enfileira os indices dos processos em estado de bloqueio
     scheduling scheduler;       
     int time;                    // incrementado a cada instrução lida
-    scheduller_policy type_escalation_policy;
+    scheduler_policy type_escalation_policy;
 } management;
 
 /*
  * Inicializa o Gerenciador de Processos
  */
-void init_management(management *management, char *file_name, int size, scheduller_policy type_escalation_policy);
+void init_management(management *management, char *file_name, int size, scheduler_policy type_escalation_policy);
 
 /*
  * Leitura do arquivo de instruções

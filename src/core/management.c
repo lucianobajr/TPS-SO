@@ -1,6 +1,6 @@
 #include "../../headers/core/management.h"
 
-void init_management(management *management, char *file_name, int size, scheduller_policy type_escalation_policy)
+void init_management(management *management, char *file_name, int size, scheduler_policy type_escalation_policy)
 {
     management->time = 0;
     management->process_table = (process_table *)malloc(sizeof(process_table));
