@@ -116,11 +116,11 @@ void create_new_process(management *management, int number_of_instructions, int 
     management->process_table[(size - 1)].data_structure = create_child_process->memory;
 
     // Processo filho criado com estado pronto, adiciona na estrutura do tipo de escalonador escolhido
-    if (SCHEDULER == 1)
+    if (management->type_escalation_policy == MULTIPLE_QUEUES)
     {
         do_scheduling(&(management->scheduler), (size - 1), management->process_table[(size - 1)].priority);
     }
-    else if (SCHEDULER == 2)
+    else if (management->type_escalation_policy == FCFS)
     {
         to_queue(&(management->ready), (size - 1));
     }
@@ -159,39 +159,16 @@ void change_context(management *management, int index_next_process, int initial_
 
 void replace_current_image_process(management *management, char *instruction)
 {
-
     int k;
-    int response = (instruction[2] == '.' && instruction[3] == '/' && instruction[4] == 'd' && instruction[5] == 'a' && instruction[6] == 't' && instruction[7] == 'a' && instruction[8] == '/');
 
     // Copiando nome do arquivo
-
-    if (response)
+    for (k = 2; k < (strlen(instruction)); k++)
     {
-        for (k = 2; k < (strlen(instruction)); k++)
-        {
-            management->cpu.program->file_name[k - 2] = instruction[k];
-        }
-    }
-    else
-    {
-        // adicionando o path dos arquivos
-        management->cpu.program->file_name[0] = '.';
-        management->cpu.program->file_name[1] = '/';
-        management->cpu.program->file_name[2] = 'd';
-        management->cpu.program->file_name[3] = 'a';
-        management->cpu.program->file_name[4] = 't';
-        management->cpu.program->file_name[5] = 'a';
-        management->cpu.program->file_name[6] = '/';
-
-        for (k = 2; k < (strlen(instruction)); k++)
-        {
-            management->cpu.program->file_name[(k - 2) + 7] = instruction[k];
-        }
+        management->cpu.program->file_name[k - 2] = instruction[k];
     }
 
     // Colocando o '\0' para indicar fim de string
-
-    k = !response ? 1 : 0;
+    k = 1;
     while (1)
     {
         if (management->cpu.program->file_name[k] == '.')
@@ -218,11 +195,11 @@ void end_simulated_process(management *management, int *size, int *max_time)
         *max_time = tempoTotal;
     }
 
-    if (SCHEDULER == 1)
+    if (management->type_escalation_policy == MULTIPLE_QUEUES)
     {
         next_process_execute = dequeue_scheduling(&(management->scheduler));
     }
-    else if (SCHEDULER == 2)
+    else if (management->type_escalation_policy == FCFS)
     {
         next_process_execute = dequeue(&(management->ready));
     }
@@ -383,7 +360,7 @@ void print_management(management *management, int size, int number_of_process, i
     }
 
     printf("\nProcess in ready state (indexes): \n");
-    if (SCHEDULER == 1)
+    if (management->type_escalation_policy == MULTIPLE_QUEUES)
     {
         printf("Queue 0: ");
         print_queue(management->scheduler.first);
@@ -395,7 +372,7 @@ void print_management(management *management, int size, int number_of_process, i
         print_queue(management->scheduler.fourth);
     }
 
-    else if (SCHEDULER == 2)
+    else if (management->type_escalation_policy == FCFS)
     {
         print_queue(&(management->ready));
     }

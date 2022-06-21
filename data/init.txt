@@ -3,11 +3,11 @@ D 0
 D 1
 D 2
 F 1
-R file1.txt
+R ./data/file1.txt
 V 0 2010
 S 0 10
 V 1 100
 V 2 500
 F 1
-R file2.txt
+R ./data/file2.txt
 T

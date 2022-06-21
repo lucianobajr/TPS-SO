@@ -88,7 +88,7 @@ int control(scheduller_policy type_escalation_policy)
         management process_manager;
         // Recebe os comandos do processo controle e processa eles
         char process_command_control; // Variável para receber o comando do processo Controle
-        char *name = "./data/init.txt";
+        char *name = "./data/init-2.txt";
         char *instruction = (char *)malloc(sizeof(char) * 30);
         int size = 1;             // Tabela de processos (1 porque é o primeiro processo) - pode variar de acordo com a qnt de processos atual (se for encerrado é retirado da tabela)
         int global_time = 0;      // inicializando a contagem de unidade de tempo (instruções) do gerenciador
@@ -130,7 +130,7 @@ int control(scheduller_policy type_escalation_policy)
                         printf("---------------------------------------------------------\n");
                         printf("Current file name: %s\n", process_manager.cpu.program->file_name);
                         printf("Current input: ---> %d\n", process_manager.executing_state);
-                        printf("Counter: --> %d, Instruction: --> %s", process_manager.cpu.pc, instruction);
+                        printf("Counter: --> %d, Instruction: --> %s\n", process_manager.cpu.pc, instruction);
                         printf("Priority: --> %d\n", process_manager.process_table[process_manager.executing_state].priority);
                         printf("---------------------------------------------------------\n");
                     }
@@ -206,11 +206,11 @@ int control(scheduller_policy type_escalation_policy)
             }
 
             /*                       ------> Scheduler <------                           */
-            if (SCHEDULER == 1)
+            if (process_manager.type_escalation_policy == MULTIPLE_QUEUES)
             { /* MULTIPLE LEVEL QUEUES SCHEDULLING*/
                 multiple_queues(process_manager);
             }
-            else if (SCHEDULER == 2)
+            else if (process_manager.type_escalation_policy == FCFS)
             { /* FCFS SCHEDULLING */
                 first_come_first_serve(process_manager);
             }
