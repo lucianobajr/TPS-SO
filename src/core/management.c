@@ -1,6 +1,6 @@
 #include "../../headers/core/management.h"
 
-void init_management(management *management, char *file_name, int size,scheduller_policy type_escalation_policy)
+void init_management(management *management, char *file_name, int size, scheduller_policy type_escalation_policy)
 {
     management->time = 0;
     management->process_table = (process_table *)malloc(sizeof(process_table));
@@ -49,7 +49,7 @@ char *read_instructions_file(CPU *cpu)
 
     if (DEBUG)
     {
-        logger("\n####################\n", DEBUG_COLOR);
+        logger("\n==========================\n", DEBUG_COLOR);
     }
     while (counter <= cpu->pc)
     {
@@ -59,14 +59,14 @@ char *read_instructions_file(CPU *cpu)
         if (DEBUG)
         {
             printf("\033[38;5;3m");
-            printf("Linha pega: %s", line);
-            printf("\033[0m");
+            printf("current line: %s", line);
+            printf("\n\033[0m");
         }
         counter++;
     }
     if (DEBUG)
     {
-        logger("\n####################\n", DEBUG_COLOR);
+        logger("==========================\n", DEBUG_COLOR);
     }
 
     fclose(file);
@@ -262,27 +262,27 @@ void print_management(management *management, int size, int number_of_process, i
     char state_string[20];
     float average_time = management->time / number_of_process;
 
-    logger("\t\t=================== Informações do Sistema =================== \n\n", COMMUN_COLOR);
+    logger("\t\t\t\t\t========================= SYSTEM INFORMATION ========================= \n\n", COMMUN_COLOR);
 
-    printf("Quantidade de processos:  %d\n", size);
-    printf("Tempo de execução do sistema até agora: %d\n", management->time);
-    printf("Tempo médio de execução processos: %f\n", average_time);
+    printf("Number of processes:  %d\n", size);
+    printf("System runtime so far: %d\n", management->time);
+    printf("Average process execution time: %f\n", average_time);
 
     if (longer_time == -1)
     {
-        printf("Maior tempo de execução até agora: -\n\n");
+        printf("Longest runtime so far: -\n\n");
     }
     else
     {
-        printf("Maior tempo de execução até agora: %d\n\n", longer_time);
+        printf("Longest runtime so far: %d\n\n", longer_time);
     }
 
-    printf("\033[38;5;4m");
-    printf("\t\t=================== Processos Ativos ========================= \n\n");
-    printf("\033[0m");
+    logger("\t\t\t\t\t========================= Active Processes ========================= \n\n", COMMUN_COLOR);
 
-    printf(" pid | ppid | Indice tabela | Tempo Ciclo | Tempo Inicio | Porcent. Usada | PC |   estado   | Num variaveis | variaveis \n");
-    printf("-----------------------------------------------------------------------------------------------------------------\n");
+    printf("==========================================================================================================================================\n");
+    printf("| \033[38;5;196m pid \033[0m | \033[38;5;196m ppid \033[0m | \033[38;5;196m Table index \033[0m | \033[38;5;196m Cycle time \033[0m | \033[38;5;196m Initial Time \033[0m | \033[38;5;196m Used Percent. \033[0m | \033[38;5;196m PC \033[0m | \033[38;5;196m   Estate   \033[0m | \033[38;5;196m Num vars \033[0m |      \033[38;5;196m vars \033[0m      | \n");
+    printf("\033[0m");
+    printf("==========================================================================================================================================\n");
 
     for (int i = 0; i < size; i++)
     {
@@ -319,7 +319,30 @@ void print_management(management *management, int size, int number_of_process, i
         int pc = *management->process_table[i].pc;
         int number_of_vars = management->process_table[i].process_reference->number_of_vars;
 
-        printf(" %-3d | %-4d | %-13d | %-11d | %-12d | %-13.2f%% | %-2d | %-10s | %-13d | ", pid, ppid, i, cycle_time, initial_time, percentage, pc, state_string, number_of_vars);
+        printf("| %-5d | %-6d | %-13d | %-12d | %-14d | %-14.2f%% | %-4d |", pid, ppid, i, cycle_time, initial_time, percentage, pc);
+
+        switch (management->process_table[i].state)
+        {
+        case READY:
+            printf("\033[38;5;68m");
+            printf(" %-12s", state_string);
+            printf("\033[0m |");
+            break;
+        case EXECUTING:
+            printf("\033[38;5;3m");
+            printf(" %-12s", state_string);
+            printf("\033[0m |");
+            break;
+        case BLOCKED:
+            printf("\033[38;5;1m");
+            printf(" %-12s", state_string);
+            printf("\033[0m |");
+            break;
+        default:
+            break;
+        }
+
+        printf(" %-10d | ", number_of_vars);
 
         for (int ii = 0; ii < management->process_table[i].process_reference->number_of_vars; ii++)
         {
@@ -356,20 +379,19 @@ void print_management(management *management, int size, int number_of_process, i
                 }
             }
         }
-
-        printf("\n");
+        printf("\n==========================================================================================================================================\n");
     }
 
-    printf("\nProcesso em estado pronto (Índices): \n");
+    printf("\nProcess in ready state (indexes): \n");
     if (SCHEDULER == 1)
     {
-        printf("Fila 0: ");
+        printf("Queue 0: ");
         print_queue(management->scheduler.first);
-        printf("Fila 1: ");
+        printf("Queue 1: ");
         print_queue(management->scheduler.second);
-        printf("Fila 2: ");
+        printf("Queue 2: ");
         print_queue(management->scheduler.third);
-        printf("Fila 3: ");
+        printf("Queue 3: ");
         print_queue(management->scheduler.fourth);
     }
 
@@ -378,7 +400,7 @@ void print_management(management *management, int size, int number_of_process, i
         print_queue(&(management->ready));
     }
 
-    printf("Processos em estado bloqueado (Indices): \n");
+    printf("Process in blocked state (indexes): \n");
     print_queue(&(management->blocked));
     printf("------------------------------------------------------------\n");
 }

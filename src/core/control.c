@@ -265,9 +265,11 @@ void command_m(pid_t pid2, management process_manager, int size, int total_of_pr
     if (pid2 == 0)
     {
         print_management(&process_manager, size, total_of_process, max_process);
-        printf("==========================\n");
-        printf("Average time per cycle: %.2f\n", (float)process_manager.time / total_of_process);
-        printf("==========================\n");
+        printf("\033[38;5;3m");
+        printf("==================================\n");
+        printf("   Average time per cycle: %.2f\n", (float)process_manager.time / total_of_process);
+        printf("==================================\n");
+        printf("\033[0m");
 
         exit(0);
     }
