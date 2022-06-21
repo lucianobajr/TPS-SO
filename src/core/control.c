@@ -1,6 +1,6 @@
 #include "../../headers/core/control.h"
 
-int control(scheduller_policy type_escalation_policy)
+int control(scheduler_policy type_escalation_policy)
 {
     FILE *file;
     char file_name[TAM];

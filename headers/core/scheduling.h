@@ -10,7 +10,7 @@
 #include "../../headers/shared/queue.h"
 
 
-// Escalonamento de múltiplas com classes de prioridade
+// Escalonamento de múltiplas filas com classes de prioridade
 typedef struct
 {
     queue *first;
