@@ -88,7 +88,7 @@ int control(scheduler_policy type_escalation_policy)
         management process_manager;
         // Recebe os comandos do processo controle e processa eles
         char process_command_control; // Variável para receber o comando do processo Controle
-        char *name = "./data/init-2.txt";
+        char *name = "./data/init.txt";
         char instruction[50];
         int size = 1;             // Tabela de processos (1 porque é o primeiro processo) - pode variar de acordo com a qnt de processos atual (se for encerrado é retirado da tabela)
         int global_time = 0;      // inicializando a contagem de unidade de tempo (instruções) do gerenciador

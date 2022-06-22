@@ -38,8 +38,6 @@ char *read_instructions_file(CPU *cpu)
     char *line = (char *)malloc(20 * sizeof(char));
     int counter = 0;
 
-    printf("%s", cpu->program->file_name);
-
     file = fopen(cpu->program->file_name, "r");
 
     if (file == NULL)
@@ -279,7 +277,7 @@ void print_management(management *management, int size, int number_of_process, i
     logger("\t\t\t\t\t========================= Active Processes ========================= \n\n", COMMUN_COLOR);
 
     printf("==========================================================================================================================================\n");
-    printf("| \033[38;5;196m pid \033[0m | \033[38;5;196m ppid \033[0m | \033[38;5;196m Table index \033[0m | \033[38;5;196m Cycle time \033[0m | \033[38;5;196m Initial Time \033[0m | \033[38;5;196m Used Percent. \033[0m | \033[38;5;196m PC \033[0m | \033[38;5;196m   Estate   \033[0m | \033[38;5;196m Num vars \033[0m |      \033[38;5;196m vars \033[0m      | \n");
+    printf("| \033[38;5;196m pid \033[0m | \033[38;5;196m ppid \033[0m | \033[38;5;196m Table index \033[0m | \033[38;5;196m Cycle time \033[0m | \033[38;5;196m Initial Time \033[0m | \033[38;5;196m Used Percent. \033[0m | \033[38;5;196m PC \033[0m | \033[38;5;196m   State   \033[0m | \033[38;5;196m Num vars \033[0m |      \033[38;5;196m vars \033[0m      | \n");
     printf("\033[0m");
     printf("==========================================================================================================================================\n");
 
