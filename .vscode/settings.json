@@ -1,0 +1,15 @@
+{
+    "files.associations": {
+        "processosimulado.h": "c",
+        "escalonador.h": "c",
+        "processogerenciadorprocessos.h": "c",
+        "scheduling.h": "c",
+        "queue.h": "c",
+        "cpu.h": "c",
+        "control.h": "c",
+        "program.h": "c",
+        "simulated_process.h": "c",
+        "process_table.h": "c",
+        "log.h": "c"
+    }
+}

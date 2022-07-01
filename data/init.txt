@@ -8,13 +8,13 @@ A 0 20
 S 1 53
 A 1 55
 F 1
-R file_a
+R file_a.txt
 F 1
-R file_b
+R file_b.txt
 F 1
-R file_c
+R file_c.txt
 F 1
-R file_d
+R file_d.txt
 F 1
-R file_e
+R file_e.txt
 T
