@@ -32,7 +32,23 @@ void generate(int size)
     fclose(file);
 }
 
+void read_dat()
+{
+    FILE *file;
+    const char *path = "data/memory.dat";
+    char *line = (char *)malloc(20 * sizeof(char));
+
+    file = fopen(path, "r");
+
+    while (!feof(file))
+    {
+        fgets(line, 20, file);
+        printf("%s\n", line);
+    }
+}
+
 void main()
 {
     generate(100);
+    read_dat();
 }
