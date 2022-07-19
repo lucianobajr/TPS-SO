@@ -1,5 +1,33 @@
 #include "../../headers/components/main_memory.h"
 
+void print_main_memory(main_memory memory, int executing)
+{
+    int total_iterations_allocated = memory.allocated / 5;
+    int total_iterations_empty = memory.empty / 5;
+
+    if (executing)
+    {
+        printf("\e[42m");
+    }
+    else
+    {
+        printf("\e[41m");
+    }
+
+    for (int i = 0; i < total_iterations_allocated; i++)
+    {
+        printf(" ");
+    }
+    printf("[%dkb] \e[0m\e[47m", memory.allocated);
+
+    for (int i = 0; i < 20; i++)
+    {
+        printf(" ");
+    }
+
+    printf("[%dkb] \e[0m\n", memory.empty);
+}
+
 void generate()
 {
     FILE *file;
@@ -195,17 +223,17 @@ void worst_fit(int blockSize[], int m, int processSize[], int n)
     // Stores block id of the block allocated to a
     // process
     int allocation[n];
-  
+
     // Initially no block is assigned to any process
     memset(allocation, -1, sizeof(allocation));
-  
+
     // pick each process and find suitable blocks
     // according to its size ad assign to it
-    for (int i=0; i<n; i++)
+    for (int i = 0; i < n; i++)
     {
         // Find the best fit block for current process
         int wstIdx = -1;
-        for (int j=0; j<m; j++)
+        for (int j = 0; j < m; j++)
         {
             if (blockSize[j] >= processSize[i])
             {
@@ -215,18 +243,18 @@ void worst_fit(int blockSize[], int m, int processSize[], int n)
                     wstIdx = j;
             }
         }
-  
+
         // If we could find a block for current process
         if (wstIdx != -1)
         {
             // allocate block j to p[i] process
             allocation[i] = wstIdx;
-  
+
             // Reduce available memory in this block.
             blockSize[wstIdx] -= processSize[i];
         }
     }
-  
+
     printf("\nProcess No.\tProcess Size\tBlock no.\n");
     for (int i = 0; i < n; i++)
     {

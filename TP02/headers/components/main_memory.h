@@ -6,10 +6,10 @@
 #include <string.h> 
 #include <time.h> 
 
-// 4096*1024
-// Processo tem 4096 MB de memória
-#define MEMSIZE 4194304
-#define SIZE 100
+// 2*1024
+// Processo tem 2 MB de memória
+#define MEMSIZE 2048
+#define SIZE 10
 
 typedef struct{
     int empty;
@@ -51,5 +51,10 @@ void best_fit(int blockSize[], int m, int processSize[], int n);
 * pode ser depois alocado para outro processo
 */
 void worst_fit(int blockSize[], int m, int processSize[], int n);
+
+/*
+* printa o espaço de memória
+*/
+void print_main_memory(main_memory memory, int executing);
 
 #endif
