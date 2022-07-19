@@ -8,7 +8,7 @@
 
 // 2*1024
 // Processo tem 2 MB de memória
-#define MEMSIZE 2048
+#define MEMSIZE 2048 // em KBs
 #define SIZE 10
 
 typedef struct{

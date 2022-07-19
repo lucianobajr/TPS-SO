@@ -59,7 +59,6 @@ main_memory *init_main_memory()
 
     FILE *file;
     const char *path = "data/memory.dat";
-    char *line = (char *)malloc(20 * sizeof(char));
     int index, value;
 
     file = fopen(path, "r");
@@ -93,8 +92,13 @@ void first_fit(int blockSize[], int m, int processSize[], int n)
     {
         for (j = 0; j < m; j++) // here, m -> number of blocks
         {
+            // allocated > 0 ?
             if (blockSize[j] >= processSize[i])
             {
+                // memory->empty = memory->empty - processSize[i]
+                // memory->allocated = processSize[i]
+
+
                 // allocating block j to the ith process
                 allocation[i] = j;
 
