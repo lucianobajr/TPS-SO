@@ -25,7 +25,7 @@ void print_main_memory(main_memory memory, int executing)
         printf(" ");
     }
 
-    printf("[%dkb] \e[0m\n", memory.empty);
+    printf("\e[1;30m[%dkb]\e[0m \e[0m\n", memory.empty);
 }
 
 void generate()
@@ -71,56 +71,6 @@ main_memory *init_main_memory()
     }
 
     return memory;
-}
-
-void first_fit(int blockSize[], int m, int processSize[], int n)
-{
-    int i, j;
-    // Stores block id of the
-    // block allocated to a process
-    int allocation[n];
-
-    // Initially no block is assigned to any process
-    for (i = 0; i < n; i++)
-    {
-        allocation[i] = -1;
-    }
-
-    // pick each process and find suitable blocks
-    // according to its size ad assign to it
-    for (i = 0; i < n; i++) // here, n -> number of processes
-    {
-        for (j = 0; j < m; j++) // here, m -> number of blocks
-        {
-            // allocated > 0 ?
-            if (blockSize[j] >= processSize[i])
-            {
-                // memory->empty = memory->empty - processSize[i]
-                // memory->allocated = processSize[i]
-
-
-                // allocating block j to the ith process
-                allocation[i] = j;
-
-                // Reduce available memory in this block.
-                blockSize[j] -= processSize[i];
-
-                break; // go to the next process in the queue
-            }
-        }
-    }
-
-    printf("\nProcess No.\tProcess Size\tBlock no.\n");
-    for (int i = 0; i < n; i++)
-    {
-        printf(" %i\t\t\t", i + 1);
-        printf("%i\t\t\t\t", processSize[i]);
-        if (allocation[i] != -1)
-            printf("%i", allocation[i] + 1);
-        else
-            printf("Not Allocated");
-        printf("\n");
-    }
 }
 
 void next_fit(int blockSize[], int m, int processSize[], int n)
@@ -172,102 +122,92 @@ void next_fit(int blockSize[], int m, int processSize[], int n)
     }
 }
 
-void best_fit(int blockSize[], int m, int processSize[], int n)
+int highest_value_in_memory(main_memory *memory)
 {
-    // Stores block id of the block allocated to a
-    // process
-    int allocation[n];
+    int highest_value = memory[0].empty + memory[0].allocated;
 
-    // Initially no block is assigned to any process
-    memset(allocation, -1, sizeof(allocation));
-
-    // pick each process and find suitable blocks
-    // according to its size ad assign to it
-    for (int i = 0; i < n; i++)
+    for (int i = 1; i < SIZE; i++)
     {
-        // Find the best fit block for current process
-        int bestIdx = -1;
-        for (int j = 0; j < m; j++)
+        if ((memory[i].empty + memory[i].allocated) > highest_value)
         {
-            if (blockSize[j] >= processSize[i])
-            {
-                if (bestIdx == -1)
-                    bestIdx = j;
-                else if (blockSize[bestIdx] > blockSize[j])
-                    bestIdx = j;
-            }
-        }
-
-        // If we could find a block for current process
-        if (bestIdx != -1)
-        {
-            // allocate block j to p[i] process
-            allocation[i] = bestIdx;
-
-            // Reduce available memory in this block.
-            blockSize[bestIdx] -= processSize[i];
+            highest_value = memory[i].empty + memory[i].allocated;
         }
     }
 
-    printf("\nProcess No.\tProcess Size\tBlock no.\n");
-    for (int i = 0; i < n; i++)
+    // retorna o maior valor + 40%
+    return highest_value + ((highest_value * 40) / 100);
+}
+
+/*------------------------ALGORITMOS DE ALOCAÇÃO------------------------*/
+void first_fit(main_memory *memory, int process_size)
+{
+
+    // pick each process and find suitable blocks
+    // according to its size ad assign to it
+    for (int i = 0; i < SIZE; i++) // here, n -> number of processes
     {
 
-        printf(" %d \t\t %d \t\t", i + 1, processSize[i]);
-        if (allocation[i] != -1)
-            printf("%d", allocation[i] + 1);
-        else
-            printf("Not Allocated");
-        printf("\n");
+        // allocated > 0 ?
+        if (memory[i].empty >= process_size && memory[i].allocated == 0)
+        {
+            memory[i].empty = memory[i].empty - process_size;
+            memory[i].allocated = process_size;
+
+            break; // go to the next process in the queue
+        }
     }
 }
 
-void worst_fit(int blockSize[], int m, int processSize[], int n)
+void best_fit_test(main_memory *memory, int process_size)
 {
-    // Stores block id of the block allocated to a
-    // process
-    int allocation[n];
 
-    // Initially no block is assigned to any process
-    memset(allocation, -1, sizeof(allocation));
-
-    // pick each process and find suitable blocks
-    // according to its size ad assign to it
-    for (int i = 0; i < n; i++)
+    int best_index = -1;
+    for (int j = 0; j < SIZE; j++)
     {
-        // Find the best fit block for current process
-        int wstIdx = -1;
-        for (int j = 0; j < m; j++)
+        if (memory[j].allocated == 0 && (memory[j].empty >= process_size))
         {
-            if (blockSize[j] >= processSize[i])
+            if (best_index == -1)
             {
-                if (wstIdx == -1)
-                    wstIdx = j;
-                else if (blockSize[wstIdx] < blockSize[j])
-                    wstIdx = j;
+                best_index = j;
             }
-        }
-
-        // If we could find a block for current process
-        if (wstIdx != -1)
-        {
-            // allocate block j to p[i] process
-            allocation[i] = wstIdx;
-
-            // Reduce available memory in this block.
-            blockSize[wstIdx] -= processSize[i];
+            else if (memory[j].empty < memory[best_index].empty)
+            {
+                best_index = j;
+            }
         }
     }
 
-    printf("\nProcess No.\tProcess Size\tBlock no.\n");
-    for (int i = 0; i < n; i++)
+    // If we could find a block for current process
+    if (best_index != -1)
     {
+        memory[best_index].empty = memory[best_index].empty - process_size;
+        memory[best_index].allocated = process_size;
+    }
+}
 
-        printf(" %d \t\t %d \t\t", i + 1, processSize[i]);
-        if (allocation[i] != -1)
-            printf("%d", allocation[i] + 1);
-        else
-            printf("Not Allocated");
-        printf("\n");
+void worst_fit(main_memory *memory, int process_size)
+{
+
+    int best_index = -1;
+    for (int j = 0; j < SIZE; j++)
+    {
+        if (memory[j].allocated == 0 && (memory[j].empty >= process_size))
+        {
+            if (best_index == -1)
+            {
+                best_index = j;
+            }
+            else if (memory[j].empty >= memory[best_index].empty)
+            {
+                best_index = j;
+            }
+        }
+    }
+
+    // If we could find a block for current process
+    if (best_index != -1)
+    {
+        memory[best_index].empty = memory[best_index].empty - process_size;
+        memory[best_index].allocated = process_size;
     }
 }

@@ -30,7 +30,7 @@ main_memory *init_main_memory();
 /*
 *  Irá alocar o processo no primeiro espaço livre do array
 */
-void first_fit(int blockSize[], int m, int processSize[], int n);
+void first_fit(main_memory *memory, int process_size);
 
 /*
 * Firt fit porém ele começa como o primeiro ajuste para encontrar
@@ -43,18 +43,23 @@ void next_fit(int blockSize[], int m, int processSize[], int n);
 * Irá percorrer toda a lista para encontrar o espaço que 
 * desperdiçará o mínimo possível
 */
-void best_fit(int blockSize[], int m, int processSize[], int n);
+void best_fit(main_memory *memory, int process_size);
 
 /*
 * Irá percorrer toda a lista para encontrar o espaço que
 * “desperdiçará” o máximo possível, esse espaço desperdiçado
 * pode ser depois alocado para outro processo
 */
-void worst_fit(int blockSize[], int m, int processSize[], int n);
+void worst_fit(main_memory *memory, int process_size);
 
 /*
 * printa o espaço de memória
 */
 void print_main_memory(main_memory memory, int executing);
+
+/*
+* Retorna o valor de teto do range aleatório do processo
+*/
+int highest_value_in_memory(main_memory *memory);
 
 #endif
