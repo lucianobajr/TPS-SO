@@ -158,7 +158,7 @@ void first_fit(main_memory *memory, int process_size)
     }
 }
 
-void best_fit_test(main_memory *memory, int process_size)
+void best_fit(main_memory *memory, int process_size)
 {
 
     int best_index = -1;

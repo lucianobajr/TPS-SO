@@ -1,10 +1,15 @@
 #include "../headers/components/main_memory.h"
+#include "../headers/metrics/metrics.h"
 #include "../headers/log/log.h"
 
 int main(int argc, char const *argv[])
 {
+    
     generate();
     main_memory *memory = init_main_memory();
+
+    metrics memory_metrics;
+    initialize_metrics(&memory_metrics);
 
     srand(time(NULL));
 
@@ -16,7 +21,7 @@ int main(int argc, char const *argv[])
 
         printf("VALOR = %d\n", process_size);
 
-        worst_fit_test(memory, process_size);
+        worst_fit(memory, process_size);
     }
 
     for (int i = 0; i < SIZE; i++)

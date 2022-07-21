@@ -50,6 +50,11 @@ int list_is_empty(list linked_list);
 /*
 * Retorna a quantidade de intens na lista
 */
-int lenght(list *linked_list)
+int lenght(list *linked_list);
+
+/*
+* Soma dos valores da lista 
+*/
+int sum(list *linked_list);
 
 #endif

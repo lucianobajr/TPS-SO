@@ -44,3 +44,17 @@ int lenght(list *linked_list)
 
     return lenght;
 }
+
+int sum(list *linked_list)
+{
+    int sum = 0;
+
+    pointer aux_pointer;
+    aux_pointer = linked_list->first->next;
+    while (aux_pointer != NULL)
+    {
+        sum += aux_pointer->content.value;
+    }
+
+    return sum;
+}
