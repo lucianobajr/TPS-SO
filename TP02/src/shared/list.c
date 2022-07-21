@@ -33,28 +33,30 @@ void print_list(list *linked_list)
 
 int lenght(list *linked_list)
 {
-    int lenght = 0;
+    int value = 0;
 
     pointer aux_pointer;
     aux_pointer = linked_list->first->next;
     while (aux_pointer != NULL)
     {
-        lenght++;
+        value++;
+        aux_pointer = aux_pointer->next;
     }
 
-    return lenght;
+    return value;
 }
 
 int sum(list *linked_list)
 {
-    int sum = 0;
+    int value = 0;
 
     pointer aux_pointer;
     aux_pointer = linked_list->first->next;
     while (aux_pointer != NULL)
     {
-        sum += aux_pointer->content.value;
+        value += aux_pointer->content.value;
+        aux_pointer = aux_pointer->next;
     }
 
-    return sum;
+    return value;
 }

@@ -138,9 +138,12 @@ int highest_value_in_memory(main_memory *memory)
     return highest_value + ((highest_value * 40) / 100);
 }
 
-/*------------------------ALGORITMOS DE ALOCAÇÃO------------------------*/
-void first_fit(main_memory *memory, int process_size)
+void first_fit(main_memory *memory, metrics *memory_metrics, int process_size)
 {
+
+    int index = -1;
+
+    increment_total_allocation_request(memory_metrics);
 
     // pick each process and find suitable blocks
     // according to its size ad assign to it
@@ -150,64 +153,104 @@ void first_fit(main_memory *memory, int process_size)
         // allocated > 0 ?
         if (memory[i].empty >= process_size && memory[i].allocated == 0)
         {
-            memory[i].empty = memory[i].empty - process_size;
-            memory[i].allocated = process_size;
-
+            index = i;
             break; // go to the next process in the queue
         }
     }
+
+    if (index != -1)
+    {
+        memory[index].empty = memory[index].empty - process_size;
+        memory[index].allocated = process_size;
+
+        add_node_traveled(memory_metrics, index);
+    }
+    else
+    {
+        increment_denied_allocation_request(memory_metrics);
+    }
 }
 
-void best_fit(main_memory *memory, int process_size)
+void best_fit(main_memory *memory, metrics *memory_metrics, int process_size)
 {
+    int index = -1;
 
-    int best_index = -1;
+    increment_total_allocation_request(memory_metrics);
+
     for (int j = 0; j < SIZE; j++)
     {
         if (memory[j].allocated == 0 && (memory[j].empty >= process_size))
         {
-            if (best_index == -1)
+            if (index == -1)
             {
-                best_index = j;
+                index = j;
             }
-            else if (memory[j].empty < memory[best_index].empty)
+            else if (memory[j].empty < memory[index].empty)
             {
-                best_index = j;
+                index = j;
             }
         }
     }
 
     // If we could find a block for current process
-    if (best_index != -1)
+    if (index != -1)
     {
-        memory[best_index].empty = memory[best_index].empty - process_size;
-        memory[best_index].allocated = process_size;
+        memory[index].empty = memory[index].empty - process_size;
+        memory[index].allocated = process_size;
+    }
+    else
+    {
+        increment_denied_allocation_request(memory_metrics);
     }
 }
 
-void worst_fit(main_memory *memory, int process_size)
+void worst_fit(main_memory *memory, metrics *memory_metrics, int process_size)
 {
+    int index = -1;
 
-    int best_index = -1;
+    increment_total_allocation_request(memory_metrics);
+
     for (int j = 0; j < SIZE; j++)
     {
         if (memory[j].allocated == 0 && (memory[j].empty >= process_size))
         {
-            if (best_index == -1)
+            if (index == -1)
             {
-                best_index = j;
+                index = j;
             }
-            else if (memory[j].empty >= memory[best_index].empty)
+            else if (memory[j].empty >= memory[index].empty)
             {
-                best_index = j;
+                index = j;
             }
         }
     }
 
     // If we could find a block for current process
-    if (best_index != -1)
+    if (index != -1)
     {
-        memory[best_index].empty = memory[best_index].empty - process_size;
-        memory[best_index].allocated = process_size;
+        memory[index].empty = memory[index].empty - process_size;
+        memory[index].allocated = process_size;
     }
+    else
+    {
+        increment_denied_allocation_request(memory_metrics);
+    }
+}
+
+int external_fragments(main_memory *memory)
+{
+    int total = 0;
+
+    for (int i = 0; i < SIZE; i++)
+    {
+        total += memory[i].empty;
+    }
+
+    return total;
+}
+
+void deallocate(main_memory *memory, int index)
+{
+    memory[index].empty = memory[index].empty + memory[index].allocated;
+    memory[index].allocated = 0;
 }

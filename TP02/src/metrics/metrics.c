@@ -27,31 +27,33 @@ void add_node_traveled(metrics *memory_metrics, int number_of_nodes)
 
 void increment_total_allocation_request(metrics *memory_metrics)
 {
-    memory_metrics->allocation_request_metrics.total++;
+    memory_metrics->allocation_request_metrics.total += 1;
 }
 
 void increment_denied_allocation_request(metrics *memory_metrics)
 {
-    memory_metrics->allocation_request_metrics.denied++;
+    memory_metrics->allocation_request_metrics.denied += 1;
 }
 
-int average_number_of_external_fragments(metrics *memory_metrics)
+float average_number_of_external_fragments(metrics *memory_metrics)
 {
-    int number_of_external_fragments = lenght(&memory_metrics->external_fragmentation);
-    int sum_of_values = sum(&memory_metrics->external_fragmentation);
 
-    return sum_of_values / number_of_external_fragments;
+    float number_of_external_fragments = lenght(&memory_metrics->external_fragmentation);
+    float sum_of_values = sum(&memory_metrics->external_fragmentation);
+
+    return (sum_of_values / number_of_external_fragments);
 }
 
-int average_allocation_time(metrics *memory_metrics)
+float average_allocation_time(metrics *memory_metrics)
 {
-    int number_of_nodes_traveled = lenght(&memory_metrics->nodes_traveled);
-    int sum_of_values = sum(&memory_metrics->external_fragmentation);
+    float number_of_nodes_traveled = lenght(&memory_metrics->nodes_traveled);
+    float sum_of_values = sum(&memory_metrics->nodes_traveled);
 
     return sum_of_values / number_of_nodes_traveled;
 }
 
-int percentage_of_allocation_request_is_denied(metrics *memory_metrics)
+float percentage_of_allocation_request_is_denied(metrics *memory_metrics)
 {
-    return ((memory_metrics->allocation_request_metrics.denied * 100) / memory_metrics->allocation_request_metrics.total);
+    float value = (memory_metrics->allocation_request_metrics.denied * 100);
+    return (value / memory_metrics->allocation_request_metrics.total);
 }
