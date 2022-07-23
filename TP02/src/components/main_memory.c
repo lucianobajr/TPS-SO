@@ -80,55 +80,6 @@ main_memory *init_main_memory()
     return memory;
 }
 
-void next_fit(int blockSize[], int m, int processSize[], int n)
-{
-    // Stores block id of the block allocated to a
-    // process
-    int allocation[n], j = 0;
-
-    // Initially no block is assigned to any process
-    memset(allocation, -1, sizeof(allocation));
-
-    // pick each process and find suitable blocks
-    // according to its size ad assign to it
-    for (int i = 0; i < n; i++)
-    {
-
-        // Do not start from beginning
-        while (j < m)
-        {
-
-            if (blockSize[j] >= processSize[i])
-            {
-
-                // allocate block j to p[i] process
-                allocation[i] = j;
-
-                // Reduce available memory in this block.
-                blockSize[j] -= processSize[i];
-
-                break;
-            }
-
-            // mod m will help in traversing the blocks from
-            // starting block after we reach the end.
-            j = (j + 1) % m;
-        }
-    }
-
-    printf("\nProcess No.\tProcess Size\tBlock no.\n");
-    for (int i = 0; i < n; i++)
-    {
-
-        printf(" %d \t\t %d \t\t", i + 1, processSize[i]);
-        if (allocation[i] != -1)
-            printf("%d", allocation[i] + 1);
-        else
-            printf("Not Allocated");
-        printf("\n");
-    }
-}
-
 int highest_value_in_memory(main_memory *memory)
 {
     int highest_value = memory[0].empty + memory[0].allocated;
@@ -174,7 +125,7 @@ void first_fit(main_memory *memory, metrics *memory_metrics, queue *denied_proce
     }
     else
     {
-        to_queue(denied_process,process_size);
+        to_queue(denied_process, process_size);
         increment_denied_allocation_request(memory_metrics);
     }
 }
@@ -210,7 +161,7 @@ void best_fit(main_memory *memory, metrics *memory_metrics, queue *denied_proces
     }
     else
     {
-        to_queue(denied_process,process_size);
+        to_queue(denied_process, process_size);
         increment_denied_allocation_request(memory_metrics);
     }
 }
@@ -246,7 +197,51 @@ void worst_fit(main_memory *memory, metrics *memory_metrics, queue *denied_proce
     }
     else
     {
-        to_queue(denied_process,process_size);
+        to_queue(denied_process, process_size);
+        increment_denied_allocation_request(memory_metrics);
+    }
+}
+
+void next_fit(main_memory *memory, metrics *memory_metrics, queue *denied_process, int process_size, int *next_fit_index)
+{
+    int index = -1;
+
+    increment_total_allocation_request(memory_metrics);
+
+    // pick each process and find suitable blocks
+    // according to its size ad assign to it
+
+    for (int i = *(next_fit_index); i < SIZE; i++) // here, n -> number of processes
+    {
+
+        // allocated > 0 ?
+        if (memory[*(next_fit_index)].allocated == 0 && memory[*(next_fit_index)].empty >= process_size)
+        {
+            index = i;
+            *(next_fit_index) += 1;
+            break; // go to the next process in the queue
+        }
+
+        if (*(next_fit_index) == SIZE - 1)
+        {
+            *(next_fit_index) = 0;
+        }
+        else
+        {
+            *(next_fit_index) += 1;
+        }
+    }
+
+    if (index != -1)
+    {
+        memory[index].empty = memory[index].empty - process_size;
+        memory[index].allocated = process_size;
+
+        add_node_traveled(memory_metrics, index);
+    }
+    else
+    {
+        to_queue(denied_process, process_size);
         increment_denied_allocation_request(memory_metrics);
     }
 }
@@ -348,17 +343,6 @@ void menu_main_memory()
 
     printf("|\n|");
     for (i = 0; i < 113; i++)
-    {
-        fputs(" ", stdout);
-    }
-
-    printf("|\n|");
-    for (i = 0; i < 13; i++)
-    {
-        fputs(" ", stdout);
-    }
-    printf("obs: if you want to use more than one algorithm, separate the numbers with a blank space");
-    for (i = 0; i < 12; i++)
     {
         fputs(" ", stdout);
     }

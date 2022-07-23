@@ -41,7 +41,7 @@ void first_fit(main_memory *memory, metrics *memory_metrics, queue *denied_proce
  * uma partição livre, mas quando chamado na próxima vez, ele
  * começa a procurar de onde parou, não desde o início.
  */
-void next_fit(int blockSize[], int m, int processSize[], int n);
+void next_fit(main_memory *memory, metrics *memory_metrics, queue *denied_process, int process_size, int *next_fit_index);
 
 /*
  * Irá percorrer toda a lista para encontrar o espaço que

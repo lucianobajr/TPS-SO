@@ -1,4 +1,5 @@
 #include "../../headers/core/control.h"
+#include "../../headers/components/main_memory.h"
 
 int control(scheduler_policy type_escalation_policy)
 {
@@ -7,6 +8,86 @@ int control(scheduler_policy type_escalation_policy)
     int input_type;
     int fd[2]; /* Descritores de arquivo para o pipe, posições: 0 leitura - 1 escrita */
     pid_t pid; /* Variável para o fork*/
+
+    generate();
+
+    list allocation_algorithms;
+    make_empty_list(&allocation_algorithms);
+
+    int algorithm_option, continue_input;
+
+    do
+    {
+        menu_main_memory();
+        scanf("%d", &algorithm_option);
+
+        if (algorithm_option != 1 && algorithm_option != 2 && algorithm_option != 3 && algorithm_option != 4)
+        {
+            logger("\nError! Invalid input!\n", ERROR_COLOR);
+            printf("----------> ");
+        }
+
+        if (element_already_exists(&allocation_algorithms, algorithm_option))
+        {
+            logger("\nError! You already chose this option!\n", ERROR_COLOR);
+        }
+        else
+        {
+            key tmp;
+            tmp.value = algorithm_option;
+            insert_in_list(&allocation_algorithms, tmp);
+        }
+
+        printf("\nDo you want to choose one more algorithm? (1) yes; (2) no: ");
+        scanf("%d", &continue_input);
+    } while (continue_input != 2);
+
+    main_memory *memory_ff; // memória principal first fit
+    main_memory *memory_nf; // memória principal next fit
+    main_memory *memory_bf; // memória principal best fit
+    main_memory *memory_wf; // memória principal worst fit
+
+    metrics memory_metrics_ff; // métricas first fit
+    metrics memory_metrics_nf; // métricas next fit
+    metrics memory_metrics_bf; // métricas best fit
+    metrics memory_metrics_wf; // métricas worst fit
+
+    queue denied_process_ff; // fila de processos negagod => first fit
+    queue denied_process_nf; // fila de processos negagod => next fit
+    queue denied_process_bf; // fila de processos negagod => best fit
+    queue denied_process_wf; // fila de processos negagod => worst fit
+
+    pointer_list aux_pointer_list;
+    aux_pointer_list = allocation_algorithms.first->next;
+    while (aux_pointer_list != NULL)
+    {
+        if (aux_pointer_list->content.value == 1)
+        {
+            memory_ff = init_main_memory();
+            initialize_metrics(&memory_metrics_ff);
+            init_queue(&denied_process_ff);
+        }
+        if (aux_pointer_list->content.value == 2)
+        {
+            memory_nf = init_main_memory();
+            initialize_metrics(&memory_metrics_nf);
+            init_queue(&denied_process_nf);
+        }
+        if (aux_pointer_list->content.value == 3)
+        {
+            memory_bf = init_main_memory();
+            initialize_metrics(&memory_metrics_bf);
+            init_queue(&denied_process_bf);
+        }
+        if (aux_pointer_list->content.value == 4)
+        {
+            memory_wf = init_main_memory();
+            initialize_metrics(&memory_metrics_wf);
+            init_queue(&denied_process_wf);
+        }
+
+        aux_pointer_list = aux_pointer_list->next;
+    }
 
     if (pipe(fd) == -1)
     {

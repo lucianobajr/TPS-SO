@@ -57,4 +57,9 @@ int lenght(list *linked_list);
 */
 int sum(list *linked_list);
 
+/*
+* Verifica se um elemento já foi inserido na lista
+*/
+int element_already_exists(list *linked_list, int value);
+
 #endif

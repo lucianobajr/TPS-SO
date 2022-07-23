@@ -20,6 +20,24 @@ void insert_in_list(list *linked_list, key content)
     linked_list->last->next = NULL;
 }
 
+int element_already_exists(list *linked_list, int value)
+{
+    int exists = 0;
+    pointer_list aux_pointer_list;
+    aux_pointer_list = linked_list->first->next;
+    while (aux_pointer_list != NULL)
+    {
+        if (aux_pointer_list->content.value == value)
+        {
+            exists = 1;
+        }
+        
+        aux_pointer_list = aux_pointer_list->next;
+    }
+
+    return exists;
+}
+
 void print_list(list *linked_list)
 {
     pointer_list aux_pointer_list;
