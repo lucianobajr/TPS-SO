@@ -28,7 +28,7 @@ typedef struct
 void initialize_metrics(metrics *memory_metrics);
 
 /*
- * Adiciona um fragment exeterno
+ * Adiciona um fragment externo
  */
 void add_external_fragment(metrics *memory_metrics, int value);
 

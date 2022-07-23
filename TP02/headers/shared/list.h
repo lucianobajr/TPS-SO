@@ -9,17 +9,17 @@ typedef struct
     int value;
 } key;
 
-typedef struct node *pointer;
+typedef struct node_list *pointer_list;
 
-typedef struct node
+typedef struct node_list
 {
     key content;
-    pointer next;
-} node;
+    pointer_list next;
+} node_list;
 
 typedef struct
 {
-    pointer first, last;
+    pointer_list first, last;
 } list;
 
 /*

@@ -7,6 +7,7 @@
 #include <time.h>
 
 #include "../../headers/metrics/metrics.h"
+#include "../../headers/shared/queue.h"
 
 // 2*1024
 // Processo tem 2 MB de memória
@@ -33,7 +34,7 @@ main_memory *init_main_memory();
 /*
  *  Irá alocar o processo no primeiro espaço livre do array
  */
-void first_fit(main_memory *memory, metrics *memory_metrics, int process_size);
+void first_fit(main_memory *memory, metrics *memory_metrics, queue *denied_process, int process_size);
 
 /*
  * Firt fit porém ele começa como o primeiro ajuste para encontrar
@@ -46,19 +47,24 @@ void next_fit(int blockSize[], int m, int processSize[], int n);
  * Irá percorrer toda a lista para encontrar o espaço que
  * desperdiçará o mínimo possível
  */
-void best_fit(main_memory *memory, metrics *memory_metrics, int process_size);
+void best_fit(main_memory *memory, metrics *memory_metrics, queue *denied_process, int process_size);
 
 /*
  * Irá percorrer toda a lista para encontrar o espaço que
  * “desperdiçará” o máximo possível, esse espaço desperdiçado
  * pode ser depois alocado para outro processo
  */
-void worst_fit(main_memory *memory, metrics *memory_metrics, int process_size);
+void worst_fit(main_memory *memory, metrics *memory_metrics, queue *denied_process, int process_size);
+
+/*
+ * Printa o texto da antes de printar a memória
+ */
+void print_text_main_memory();
 
 /*
  * printa o espaço de memória
  */
-void print_main_memory(main_memory memory, int executing);
+void print_main_memory(main_memory *memory);
 
 /*
  * Retorna o valor de teto do range aleatório do processo
@@ -74,8 +80,18 @@ int highest_value_in_memory(main_memory *memory);
 int external_fragments(main_memory *memory);
 
 /*
-* Desaloca um processo na memória
-*/
+ * Desaloca um processo na memória
+ */
 void deallocate(main_memory *memory, int index);
+
+/*
+ * Printa a memória com todas as métricas
+ */
+void print_memory_with_metrics(main_memory *memory, metrics *memory_metrics);
+
+/*
+ * Menu para escolha dos algoritmos de alocação
+ */
+void menu_main_memory();
 
 #endif

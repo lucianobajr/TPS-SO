@@ -3,7 +3,7 @@ all:
 test:
 	gcc ./__tests__/file.c -o ./__tests__/tests
 metrics:
-	gcc ./src/main-2.c ./src/components/main_memory.c ./src/metrics/metrics.c ./src/log/log.c ./src/shared/list.c  -o ./dist/test
+	gcc ./src/main-2.c ./src/components/main_memory.c ./src/metrics/metrics.c ./src/log/log.c ./src/shared/queue.c ./src/shared/list.c  -o ./dist/test
 run:
 	dist/main 1
 run_test:

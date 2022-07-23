@@ -1,31 +1,39 @@
 #include "../../headers/components/main_memory.h"
+#include "../../headers/log/log.h"
 
-void print_main_memory(main_memory memory, int executing)
+void print_text_main_memory()
 {
-    int total_iterations_allocated = memory.allocated / 5;
-    int total_iterations_empty = memory.empty / 5;
+    printf("=============================================================================\n");
+    printf("|                             MEMÓRIA PRINCIPAL                             |\n");
+    printf("=============================================================================\n");
+}
 
-    if (executing)
+void print_main_memory(main_memory *memory)
+{
+    print_text_main_memory();
+
+    int total_iterations_allocated, total_iterations_empty;
+
+    for (int i = 0; i < SIZE; i++)
     {
+        total_iterations_allocated = memory[i].allocated / 5;
+        total_iterations_empty = memory[i].empty / 5;
+
         printf("\e[42m");
-    }
-    else
-    {
-        printf("\e[41m");
-    }
 
-    for (int i = 0; i < total_iterations_allocated; i++)
-    {
-        printf(" ");
-    }
-    printf("[%dkb] \e[0m\e[47m", memory.allocated);
+        for (int i = 0; i < total_iterations_allocated; i++)
+        {
+            printf(" ");
+        }
+        printf(" [%dkb] \e[0m\e[47m", memory[i].allocated);
 
-    for (int i = 0; i < 20; i++)
-    {
-        printf(" ");
-    }
+        for (int i = 0; i < 20; i++)
+        {
+            printf(" ");
+        }
 
-    printf("\e[1;30m[%dkb]\e[0m \e[0m\n", memory.empty);
+        printf("\e[1;30m [%dkb] \e[0m \e[0m \n", memory[i].empty);
+    }
 }
 
 void generate()
@@ -40,8 +48,7 @@ void generate()
 
     for (int i = 0; i < MEMSIZE; i++)
     {
-        // Increment any random element
-        // from the array by 1
+        // incrementa 1KB de memória por vez
         memory[rand() % SIZE]++;
     }
 
@@ -138,7 +145,7 @@ int highest_value_in_memory(main_memory *memory)
     return highest_value + ((highest_value * 40) / 100);
 }
 
-void first_fit(main_memory *memory, metrics *memory_metrics, int process_size)
+void first_fit(main_memory *memory, metrics *memory_metrics, queue *denied_process, int process_size)
 {
 
     int index = -1;
@@ -167,11 +174,12 @@ void first_fit(main_memory *memory, metrics *memory_metrics, int process_size)
     }
     else
     {
+        to_queue(denied_process,process_size);
         increment_denied_allocation_request(memory_metrics);
     }
 }
 
-void best_fit(main_memory *memory, metrics *memory_metrics, int process_size)
+void best_fit(main_memory *memory, metrics *memory_metrics, queue *denied_process, int process_size)
 {
     int index = -1;
 
@@ -197,14 +205,17 @@ void best_fit(main_memory *memory, metrics *memory_metrics, int process_size)
     {
         memory[index].empty = memory[index].empty - process_size;
         memory[index].allocated = process_size;
+
+        add_node_traveled(memory_metrics, index);
     }
     else
     {
+        to_queue(denied_process,process_size);
         increment_denied_allocation_request(memory_metrics);
     }
 }
 
-void worst_fit(main_memory *memory, metrics *memory_metrics, int process_size)
+void worst_fit(main_memory *memory, metrics *memory_metrics, queue *denied_process, int process_size)
 {
     int index = -1;
 
@@ -230,9 +241,12 @@ void worst_fit(main_memory *memory, metrics *memory_metrics, int process_size)
     {
         memory[index].empty = memory[index].empty - process_size;
         memory[index].allocated = process_size;
+
+        add_node_traveled(memory_metrics, index);
     }
     else
     {
+        to_queue(denied_process,process_size);
         increment_denied_allocation_request(memory_metrics);
     }
 }
@@ -253,4 +267,109 @@ void deallocate(main_memory *memory, int index)
 {
     memory[index].empty = memory[index].empty + memory[index].allocated;
     memory[index].allocated = 0;
+}
+
+void print_memory_with_metrics(main_memory *memory, metrics *memory_metrics)
+{
+    float one = average_number_of_external_fragments(memory_metrics);
+    float two = average_allocation_time(memory_metrics);
+    float three = percentage_of_allocation_request_is_denied(memory_metrics);
+
+    printf("\n");
+    printf("\t     ====================================\n");
+    printf("\t     |       \e[1;93mPERFORMANCE PARAMETERS  \033[0m   |\n");
+    printf("\t     ====================================\n");
+    printf("\t     | \033[38;5;196m    (1)   \033[0m | \033[38;5;196m  (2)  \033[0m | \033[38;5;196m   (3)  \033[0m  |\n");
+    printf("\033[0m");
+    printf("\t     ====================================\n");
+
+    three > 0.00 ? printf("\t     | \e[1;97m  %.2f \033[0m | \e[1;97m  %.2f \033[0m | \e[1;97m  %2.2f%% \033[0m |\n", one, two, three) : printf("\t     | \e[1;97m  %.2f  \033[0m| \e[1;97m  %.2f \033[0m | \e[1;97m  %2.2f%%  \033[0m |\n", one, two, three);
+    printf("\033[0m");
+    printf("\t     ====================================\n\n");
+
+    printf("==============================================================\n");
+    printf("|                           \e[1;93mLEGEND\033[0m                           |\n");
+    printf("==============================================================\n");
+    printf("| \033[38;5;196m  (1) \e[1;97m - AVERAGE NUMBER OF EXTERNAL FRAGMENTS \033[0m             |\n");
+    printf("==============================================================\n");
+    printf("| \033[38;5;196m  (2) \e[1;97m - AVERAGE ALLOCATION TIME  \033[0m                         |\n");
+    printf("==============================================================\n");
+    printf("| \033[38;5;196m  (3) \e[1;97m - PERCENTAGE OF THE ALLOCATION REQUEST IS DENIED  \033[0m  |\n");
+    printf("==============================================================\n");
+}
+
+void menu_main_memory()
+{
+
+    int i;
+    fputs(" ", stdout);
+    for (i = 0; i < 113; i++)
+    {
+        fputs("_", stdout);
+    }
+    printf("\n|");
+    for (i = 0; i < 113; i++)
+    {
+        fputs(" ", stdout);
+    }
+    printf("|\n|");
+    for (i = 0; i < 46; i++)
+    {
+        fputs(" ", stdout);
+    }
+    printf("ALLOCATION ALGORITHMS");
+    for (i = 0; i < 46; i++)
+    {
+        fputs(" ", stdout);
+    }
+    printf("|");
+    printf("\n");
+    printf("|");
+    for (i = 0; i < 113; i++)
+    {
+        fputs("_", stdout);
+    }
+    printf("|\n|");
+    for (i = 0; i < 113; i++)
+    {
+        fputs(" ", stdout);
+    }
+
+    printf("|\n|");
+    for (i = 0; i < 27; i++)
+    {
+        fputs(" ", stdout);
+    }
+    printf("(1) first fit, (2) next fit, (3) best fit and (4) worst fit");
+    for (i = 0; i < 27; i++)
+    {
+        fputs(" ", stdout);
+    }
+
+    printf("|\n|");
+    for (i = 0; i < 113; i++)
+    {
+        fputs(" ", stdout);
+    }
+
+    printf("|\n|");
+    for (i = 0; i < 13; i++)
+    {
+        fputs(" ", stdout);
+    }
+    printf("obs: if you want to use more than one algorithm, separate the numbers with a blank space");
+    for (i = 0; i < 12; i++)
+    {
+        fputs(" ", stdout);
+    }
+
+    printf("|\n|");
+    for (i = 0; i < 113; i++)
+    {
+        fputs("_", stdout);
+    }
+    printf("|");
+    printf("\n");
+    printf("----------> ");
+    fflush(stdin);
 }
