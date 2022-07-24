@@ -2,7 +2,6 @@
 
 void init_management(management *management, char *file_name, int size, scheduler_policy type_escalation_policy)
 {
-    printf("COMEÇOU A ZUERA!");
     management->time = 0;
     management->process_table = (process_table *)malloc(sizeof(process_table));
     init_queue(&(management->ready));

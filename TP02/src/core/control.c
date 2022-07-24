@@ -105,6 +105,7 @@ int control(scheduler_policy type_escalation_policy)
 
         init_management(&process_manager, name, size, type_escalation_policy);
         allocate_new_process(&process_manager_domain, &process_manager.process_table[0], TRUE);
+        print_memories(&process_manager_domain);
 
         do
         {
