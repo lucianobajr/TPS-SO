@@ -102,15 +102,25 @@ void allocation_algorithms_used(domain *process_manager_domain)
     printf("==============================================================\n");
 }
 
-void allocate_new_process(domain *process_manager_domain, int process_size)
+void allocate_new_process(domain *process_manager_domain, process_table *new_process, int first_process)
 {
+    int highest_value = highest_value_by_allocation_algorithms(process_manager_domain, first_process == TRUE ? FALSE : TRUE);
+
+    int process_size = 1 + rand() % highest_value;
+
+    printf("\033[38;5;3m");
+    printf("==================================\n");
+    printf("      NEW PROCESS SIZE => %d\n", process_size);
+    printf("==================================\n");
+    printf("\033[0m");
+
     pointer_list aux_pointer_list;
     aux_pointer_list = process_manager_domain->allocation_algorithms.first->next;
     while (aux_pointer_list != NULL)
     {
         if (aux_pointer_list->content.value == FIRST_FIT)
         {
-            first_fit(
+            new_process->memory_index[0] = first_fit(
                 process_manager_domain->memory_first_fit,
                 &process_manager_domain->memory_metrics_first_fit,
                 &process_manager_domain->denied_process_first_fit,
@@ -122,7 +132,7 @@ void allocate_new_process(domain *process_manager_domain, int process_size)
         }
         if (aux_pointer_list->content.value == NEXT_FIT)
         {
-            next_fit(
+            new_process->memory_index[1] = next_fit(
                 process_manager_domain->memory_next_fit,
                 &process_manager_domain->memory_metrics_next_fit,
                 &process_manager_domain->denied_process_next_fit,
@@ -135,7 +145,7 @@ void allocate_new_process(domain *process_manager_domain, int process_size)
         }
         if (aux_pointer_list->content.value == BEST_FIT)
         {
-            best_fit(
+            new_process->memory_index[2] = best_fit(
                 process_manager_domain->memory_best_fit,
                 &process_manager_domain->memory_metrics_best_fit,
                 &process_manager_domain->denied_process_best_fit,
@@ -147,7 +157,7 @@ void allocate_new_process(domain *process_manager_domain, int process_size)
         }
         if (aux_pointer_list->content.value == WORST_FIT)
         {
-            worst_fit(
+            new_process->memory_index[3] = worst_fit(
                 process_manager_domain->memory_worst_fit,
                 &process_manager_domain->memory_metrics_worst_fit,
                 &process_manager_domain->denied_process_worst_fit,
@@ -231,7 +241,7 @@ void print_metrics(domain *process_manager_domain)
     print_legend_memory_with_metrics();
 }
 
-int highest_value_by_allocation_algorithms(domain *process_manager_domain)
+int highest_value_by_allocation_algorithms(domain *process_manager_domain, int using_40_percent)
 {
     int value = 0;
 
@@ -241,22 +251,22 @@ int highest_value_by_allocation_algorithms(domain *process_manager_domain)
     {
         if (aux_pointer_list->content.value == FIRST_FIT)
         {
-            value = highest_value_in_memory(process_manager_domain->memory_first_fit);
+            value = highest_value_in_memory(process_manager_domain->memory_first_fit, using_40_percent);
             break;
         }
         if (aux_pointer_list->content.value == NEXT_FIT)
         {
-            value = highest_value_in_memory(process_manager_domain->memory_next_fit);
+            value = highest_value_in_memory(process_manager_domain->memory_next_fit, using_40_percent);
             break;
         }
         if (aux_pointer_list->content.value == BEST_FIT)
         {
-            value = highest_value_in_memory(process_manager_domain->memory_best_fit);
+            value = highest_value_in_memory(process_manager_domain->memory_best_fit, using_40_percent);
             break;
         }
         if (aux_pointer_list->content.value == WORST_FIT)
         {
-            value = highest_value_in_memory(process_manager_domain->memory_worst_fit);
+            value = highest_value_in_memory(process_manager_domain->memory_worst_fit, using_40_percent);
             break;
         }
 
@@ -264,4 +274,66 @@ int highest_value_by_allocation_algorithms(domain *process_manager_domain)
     }
 
     return value;
+}
+
+void relocate_process(domain *process_manager_domain)
+{
+    // o processo precisa saber o index
+
+    pointer_list aux_pointer_list;
+    aux_pointer_list = process_manager_domain->allocation_algorithms.first->next;
+    while (aux_pointer_list != NULL)
+    {
+        if (aux_pointer_list->content.value == FIRST_FIT)
+        {
+            first_fit(
+                process_manager_domain->memory_first_fit,
+                &process_manager_domain->memory_metrics_first_fit,
+                &process_manager_domain->denied_process_first_fit,
+                dequeue(&process_manager_domain->denied_process_first_fit));
+
+            add_external_fragment(
+                &process_manager_domain->memory_metrics_first_fit,
+                external_fragments(process_manager_domain->memory_first_fit));
+        }
+        if (aux_pointer_list->content.value == NEXT_FIT)
+        {
+            next_fit(
+                process_manager_domain->memory_next_fit,
+                &process_manager_domain->memory_metrics_next_fit,
+                &process_manager_domain->denied_process_next_fit,
+                dequeue(&process_manager_domain->denied_process_next_fit),
+                &process_manager_domain->next_fit_index);
+
+            add_external_fragment(
+                &process_manager_domain->memory_metrics_next_fit,
+                external_fragments(process_manager_domain->memory_next_fit));
+        }
+        if (aux_pointer_list->content.value == BEST_FIT)
+        {
+            best_fit(
+                process_manager_domain->memory_best_fit,
+                &process_manager_domain->memory_metrics_best_fit,
+                &process_manager_domain->denied_process_best_fit,
+                dequeue(&process_manager_domain->denied_process_best_fit));
+
+            add_external_fragment(
+                &process_manager_domain->memory_metrics_best_fit,
+                external_fragments(process_manager_domain->memory_best_fit));
+        }
+        if (aux_pointer_list->content.value == WORST_FIT)
+        {
+            worst_fit(
+                process_manager_domain->memory_worst_fit,
+                &process_manager_domain->memory_metrics_worst_fit,
+                &process_manager_domain->denied_process_worst_fit,
+                dequeue(&process_manager_domain->denied_process_worst_fit));
+
+            add_external_fragment(
+                &process_manager_domain->memory_metrics_worst_fit,
+                external_fragments(process_manager_domain->memory_worst_fit));
+        }
+
+        aux_pointer_list = aux_pointer_list->next;
+    }
 }

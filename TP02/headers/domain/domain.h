@@ -1,12 +1,16 @@
 #ifndef DOMAIN_h
 #define DOMAIN_h
 
+#define TRUE 1
+#define FALSE 0
+
 #define FIRST_FIT 1
 #define NEXT_FIT 2
 #define BEST_FIT 3
 #define WORST_FIT 4
 
 #include "../../headers/components/main_memory.h"
+#include "../../headers/components/process_table.h"
 #include "../../headers/metrics/metrics.h"
 #include "../../headers/shared/queue.h"
 #include "../../headers/shared/list.h"
@@ -46,21 +50,26 @@ void allocation_algorithms_used(domain *process_manager_domain);
 /*
  * Aloca um novo processo na memória
  */
-void allocate_new_process(domain *process_manager_domain, int process_size);
+void allocate_new_process(domain *process_manager_domain, process_table *new_process, int first_process);
 
 /*
-* Printa as memórias
-*/
+ * Printa as memórias
+ */
 void print_memories(domain *process_manager_domain);
 
 /*
-* Printa as métricas
-*/
+ * Printa as métricas
+ */
 void print_metrics(domain *process_manager_domain);
 
 /*
-* Retorna o valor mais alto que um processo poderá ter
-*/
-int highest_value_by_allocation_algorithms(domain *process_manager_domain);
+ * Retorna o valor mais alto que um processo poderá ter
+ */
+int highest_value_by_allocation_algorithms(domain *process_manager_domain, int using_40_percent);
+
+/*
+ * Quando houvesse a liberação de memória por um processo, a alocação deste processo poderia ser tentada novamente.
+ */
+void relocate_process(domain *process_manager_domain);
 
 #endif

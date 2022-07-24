@@ -98,7 +98,7 @@ main_memory *init_main_memory()
     return memory;
 }
 
-int highest_value_in_memory(main_memory *memory)
+int highest_value_in_memory(main_memory *memory, int using_40_percent)
 {
     int highest_value = memory[0].empty + memory[0].allocated;
 
@@ -111,7 +111,7 @@ int highest_value_in_memory(main_memory *memory)
     }
 
     // retorna o maior valor + 40%
-    return highest_value + ((highest_value * 40) / 100);
+    return using_40_percent ? highest_value + ((highest_value * 40) / 100) : highest_value;
 }
 
 int first_fit(main_memory *memory, metrics *memory_metrics, queue *denied_process, int process_size)
@@ -316,8 +316,6 @@ void print_memory_with_metrics(main_memory *memory, metrics *memory_metrics, int
         printf("\t     |    \e[1;93mPERFORMANCE PARAMETERS - \033[38;5;196mWF\e[1;97m   |\n");
     }
 
-    
-
     printf("\t     ====================================\n");
     printf("\t     | \033[38;5;196m    (1)   \033[0m | \033[38;5;196m  (2)  \033[0m | \033[38;5;196m   (3)  \033[0m  |\n");
     printf("\033[0m");
@@ -338,7 +336,7 @@ void print_legend_memory_with_metrics()
     printf("| \033[38;5;196m  (2) \e[1;97m - AVERAGE ALLOCATION TIME  \033[0m                         |\n");
     printf("==============================================================\n");
     printf("| \033[38;5;196m  (3) \e[1;97m - PERCENTAGE OF THE ALLOCATION REQUEST IS DENIED  \033[0m  |\n");
-    printf("==============================================================\n");
+    printf("==============================================================\n\n");
 }
 
 void menu_main_memory()

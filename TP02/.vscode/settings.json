@@ -15,6 +15,7 @@
         "list.h": "c",
         "metrics.h": "c",
         "type_traits": "c",
-        "domain.h": "c"
+        "domain.h": "c",
+        "management.h": "c"
     }
 }

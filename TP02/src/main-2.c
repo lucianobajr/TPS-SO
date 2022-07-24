@@ -91,7 +91,7 @@ int main(int argc, char const *argv[])
         aux_pointer_list = aux_pointer_list->next;
     }
 
-    int highest_value = highest_value_in_memory(memory_ff);
+    int highest_value = highest_value_in_memory(memory_ff,1);
 
     srand(time(NULL));
 

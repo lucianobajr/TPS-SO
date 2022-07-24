@@ -71,7 +71,7 @@ void print_main_memory(main_memory *memory, int type);
  * Retorna o valor de teto do range aleatório do processo
  * maior valor + 40% do maior valor
  */
-int highest_value_in_memory(main_memory *memory);
+int highest_value_in_memory(main_memory *memory, int using_40_percent);
 
 /*
  * A fragmentação externa quando há uma quantidade de área suficiente na memória para
