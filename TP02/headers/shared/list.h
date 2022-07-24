@@ -9,17 +9,17 @@ typedef struct
     int value;
 } key;
 
-typedef struct node *pointer;
+typedef struct node_list *pointer_list;
 
-typedef struct node
+typedef struct node_list
 {
     key content;
-    pointer next;
-} node;
+    pointer_list next;
+} node_list;
 
 typedef struct
 {
-    pointer first, last;
+    pointer_list first, last;
 } list;
 
 /*
@@ -56,5 +56,10 @@ int lenght(list *linked_list);
 * Soma dos valores da lista 
 */
 int sum(list *linked_list);
+
+/*
+* Verifica se um elemento já foi inserido na lista
+*/
+int element_already_exists(list *linked_list, int value);
 
 #endif

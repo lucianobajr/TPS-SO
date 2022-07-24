@@ -12,6 +12,8 @@
         "process_table.h": "c",
         "log.h": "c",
         "main_memory.h": "c",
-        "list.h": "c"
+        "list.h": "c",
+        "metrics.h": "c",
+        "type_traits": "c"
     }
 }
