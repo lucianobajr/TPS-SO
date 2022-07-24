@@ -95,4 +95,9 @@ void print_memory_with_metrics(main_memory *memory, metrics *memory_metrics);
  */
 void menu_main_memory();
 
+/*
+ * Menu memoria virtual
+ */
+void menu_virtual_memory();
+
 #endif

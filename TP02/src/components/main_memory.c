@@ -5,7 +5,7 @@
 void print_text_main_memory()
 {
     printf("=============================================================================\n");
-    printf("|                             MEMÓRIA PRINCIPAL                             |\n");
+    printf("|                               MAIN MEMORY                                 |\n");
     printf("=============================================================================\n");
 }
 
@@ -339,6 +339,71 @@ void menu_main_memory()
     }
     printf("(1) first fit, (2) next fit, (3) best fit and (4) worst fit");
     for (i = 0; i < 27; i++)
+    {
+        fputs(" ", stdout);
+    }
+
+    printf("|\n|");
+    for (i = 0; i < 113; i++)
+    {
+        fputs(" ", stdout);
+    }
+
+    printf("|\n|");
+    for (i = 0; i < 113; i++)
+    {
+        fputs("_", stdout);
+    }
+    printf("|");
+    printf("\n");
+    printf("----------> ");
+    fflush(stdin);
+}
+
+void menu_virtual_memory()
+{
+
+    int i;
+    fputs(" ", stdout);
+    for (i = 0; i < 113; i++)
+    {
+        fputs("_", stdout);
+    }
+    printf("\n|");
+    for (i = 0; i < 113; i++)
+    {
+        fputs(" ", stdout);
+    }
+    printf("|\n|");
+    for (i = 0; i < 50; i++)
+    {
+        fputs(" ", stdout);
+    }
+    printf("VIRTUAL MEMORY");
+    for (i = 0; i < 49; i++)
+    {
+        fputs(" ", stdout);
+    }
+    printf("|");
+    printf("\n");
+    printf("|");
+    for (i = 0; i < 113; i++)
+    {
+        fputs("_", stdout);
+    }
+    printf("|\n|");
+    for (i = 0; i < 113; i++)
+    {
+        fputs(" ", stdout);
+    }
+
+    printf("|\n|");
+    for (i = 0; i < 36; i++)
+    {
+        fputs(" ", stdout);
+    }
+    printf("(1) virtual address, (2) physical address");
+    for (i = 0; i < 36; i++)
     {
         fputs(" ", stdout);
     }

@@ -39,8 +39,7 @@ int main (){
             allocated = false;
         }else{
 		    find_page(memory[i].address, page_table, &tlb, (char*)phy_mem, &open_frame, &page_faults, &TLB_hits);
-        }
-        
+        }   
 	}
 
     return 0;

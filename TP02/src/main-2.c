@@ -5,8 +5,32 @@
 int main(int argc, char const *argv[])
 {
     generate();
+    generate_address();
     main_memory *memory = init_main_memory();
-    TLB *tlb;
+    made_address(memory);
+    bool allocated = true;
+
+    FILE *fd;
+    int open_frame = 0;
+
+    int page_faults = 0;
+    int TLB_hits = 0;
+
+    unsigned char page_table[PAGE_TABLE_SIZE];
+    memset(page_table, -1, sizeof(page_table));
+
+    TLB tlb;
+    memset(tlb.TLB_page, -1, sizeof(tlb.TLB_page));
+    memset(tlb.TLB_frame, -1, sizeof(tlb.TLB_frame));
+    tlb.ind = 0;
+
+    char phy_mem[PHYS_MEM_SIZE][PHYS_MEM_SIZE];
+
+    fd = fopen("data/address.txt", "r");
+    if (fd == NULL){
+        printf("Fail trying to open the file!!!\n");
+        exit(0);
+    }
 
     list allocation_algorithms;
     make_empty_list(&allocation_algorithms);
@@ -43,7 +67,6 @@ int main(int argc, char const *argv[])
     } while (continue_input != 2);
 
     printf("\n");
-
     main_memory *memory_ff; // memória principal first fit
     main_memory *memory_nf; // memória principal next fit
     main_memory *memory_bf; // memória principal best fit
@@ -130,5 +153,10 @@ int main(int argc, char const *argv[])
     print_queue(&denied_process_nf);
     print_queue(&denied_process_wf);
 
+    // for (int i = 0; i < SIZE; i++)
+    // {
+    //     memory[i].allocated == 0 ? allocated = false : find_page(memory[i].address, page_table, &tlb, (char*)phy_mem, &open_frame, &page_faults, &TLB_hits);
+    // }
+    
     return 0;
 }

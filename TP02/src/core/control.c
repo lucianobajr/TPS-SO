@@ -1,15 +1,38 @@
 #include "../../headers/core/control.h"
 #include "../../headers/components/main_memory.h"
+#include "../../headers/components/virtual_memory.h"
 
 int control(scheduler_policy type_escalation_policy)
 {
     FILE *file;
+    FILE *fpointer;
     char file_name[TAM];
     int input_type;
     int fd[2]; /* Descritores de arquivo para o pipe, posições: 0 leitura - 1 escrita */
     pid_t pid; /* Variável para o fork*/
 
     generate();
+    generate_address();
+    bool allocated = true;
+    int open_frame = 0;
+    int page_faults = 0;
+    int TLB_hits = 0;
+
+    unsigned char page_table[PAGE_TABLE_SIZE];
+    memset(page_table, -1, sizeof(page_table));
+
+    TLB tlb;
+    memset(tlb.TLB_page, -1, sizeof(tlb.TLB_page));
+    memset(tlb.TLB_frame, -1, sizeof(tlb.TLB_frame));
+    tlb.ind = 0;
+
+    char phy_mem[PHYS_MEM_SIZE][PHYS_MEM_SIZE];
+
+    fpointer = fopen("data/address.txt", "r");
+    if (fpointer == NULL){
+        printf("Fail trying to open the file!!!\n");
+        exit(0);
+    }
 
     list allocation_algorithms;
     make_empty_list(&allocation_algorithms);
@@ -66,24 +89,28 @@ int control(scheduler_policy type_escalation_policy)
             memory_ff = init_main_memory();
             initialize_metrics(&memory_metrics_ff);
             init_queue(&denied_process_ff);
+            made_address(memory_ff);
         }
         if (aux_pointer_list->content.value == 2)
         {
             memory_nf = init_main_memory();
             initialize_metrics(&memory_metrics_nf);
             init_queue(&denied_process_nf);
+            made_address(memory_nf);
         }
         if (aux_pointer_list->content.value == 3)
         {
             memory_bf = init_main_memory();
             initialize_metrics(&memory_metrics_bf);
             init_queue(&denied_process_bf);
+            made_address(memory_bf);
         }
         if (aux_pointer_list->content.value == 4)
         {
             memory_wf = init_main_memory();
             initialize_metrics(&memory_metrics_wf);
             init_queue(&denied_process_wf);
+            made_address(memory_wf);
         }
 
         aux_pointer_list = aux_pointer_list->next;
@@ -95,6 +122,17 @@ int control(scheduler_policy type_escalation_policy)
         return 1;
     }
 
+    
+    int option[2];
+
+    do
+    {
+        menu_virtual_memory();
+        scanf("%d", &option[0]);
+        printf("\nDo you want to continue the program? (1) yes (2) no: ");
+        scanf("%d", &option[1]);
+    } while (option[1] != 2);
+    
     print_menu1();
 
     do
