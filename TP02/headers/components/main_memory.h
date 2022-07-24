@@ -14,6 +14,7 @@
 typedef struct{
     int empty;
     int allocated;
+    int address;
 } main_memory;
 
 /*

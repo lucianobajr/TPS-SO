@@ -3,13 +3,17 @@ all:
 test:
 	gcc ./__tests__/file.c -o ./__tests__/tests
 metrics:
-	gcc ./src/main-2.c ./src/components/main_memory.c ./src/metrics/metrics.c ./src/log/log.c ./src/shared/list.c  -o ./dist/test
+	gcc ./src/main-2.c ./src/components/main_memory.c ./src/metrics/metrics.c ./src/log/log.c ./src/shared/list.c ./src/components/virtual_memory.c  -o ./dist/test
+virtual:
+	gcc ./src/main-3.c ./src/components/main_memory.c ./src/metrics/metrics.c ./src/log/log.c ./src/shared/list.c ./src/components/virtual_memory.c  -o ./dist/out	
 run:
 	dist/main 1
 run_test:
 	__tests__/tests
 run_metrics:
 	dist/test
+run_virtual:
+	dist/out ./data/address.txt
 clean:
 	rm dist/main
 clean_exec:

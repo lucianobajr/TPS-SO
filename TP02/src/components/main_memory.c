@@ -1,4 +1,5 @@
 #include "../../headers/components/main_memory.h"
+#include "../../headers/components/virtual_memory.h"
 
 void print_main_memory(main_memory memory, int executing)
 {
@@ -69,6 +70,7 @@ main_memory *init_main_memory()
         memory[index].empty = value;
         memory[index].allocated = 0;
     }
+    
 
     return memory;
 }

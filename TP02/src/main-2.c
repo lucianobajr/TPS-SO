@@ -1,12 +1,14 @@
 #include "../headers/components/main_memory.h"
 #include "../headers/metrics/metrics.h"
 #include "../headers/log/log.h"
+#include "../headers/components/virtual_memory.h"
 
 int main(int argc, char const *argv[])
 {
     
     generate();
     main_memory *memory = init_main_memory();
+    TLB *tlb;
 
     metrics memory_metrics;
     initialize_metrics(&memory_metrics);
@@ -27,7 +29,10 @@ int main(int argc, char const *argv[])
     for (int i = 0; i < SIZE; i++)
     {
         print_main_memory(memory[i], 1);
-    }
+    }   
+    
+    generate_address();
+    
 
     return 0;
 }
