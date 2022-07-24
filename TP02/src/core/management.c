@@ -20,6 +20,7 @@ void init_management(management *management, char *file_name, int size, schedule
     management->process_table[0].inital_time = management->time;
     management->process_table[0].priority = 0;
     management->process_table[0].state = EXECUTING;
+    management->process_table[0].memory_index = -1;
 
     // Processo está pronto para executar
     /* Variável armazena o tamanho da tabela de processos, tal valor subtraído de 1 gera o índice do processo na tabela */

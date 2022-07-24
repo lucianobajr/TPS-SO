@@ -106,23 +106,23 @@ int main(int argc, char const *argv[])
         first_fit(memory_ff, &memory_metrics_ff, &denied_process_ff, process_size);
         next_fit(memory_nf, &memory_metrics_nf, &denied_process_nf, process_size, &next_fit_index);
         best_fit(memory_bf, &memory_metrics_bf, &denied_process_bf, process_size);
-        worst_fit(memory_wf, &memory_metrics_wf, &denied_process_wf, process_size);   
-    
+        worst_fit(memory_wf, &memory_metrics_wf, &denied_process_wf, process_size);
+
         add_external_fragment(&memory_metrics_ff, external_fragments(memory_ff));
         add_external_fragment(&memory_metrics_nf, external_fragments(memory_nf));
         add_external_fragment(&memory_metrics_bf, external_fragments(memory_bf));
         add_external_fragment(&memory_metrics_wf, external_fragments(memory_wf));
     }
 
-    print_main_memory(memory_ff);
-    print_main_memory(memory_nf);
-    print_main_memory(memory_bf);
-    print_main_memory(memory_wf);
+    print_main_memory(memory_ff, 1);
+    print_main_memory(memory_nf, 2);
+    print_main_memory(memory_bf, 3);
+    print_main_memory(memory_wf, 4);
 
-    print_memory_with_metrics(memory_ff, &memory_metrics_ff);
-    print_memory_with_metrics(memory_nf, &memory_metrics_nf);
-    print_memory_with_metrics(memory_bf, &memory_metrics_bf);
-    print_memory_with_metrics(memory_wf, &memory_metrics_wf);
+    print_memory_with_metrics(memory_ff, &memory_metrics_ff, 1);
+    print_memory_with_metrics(memory_nf, &memory_metrics_nf, 2);
+    print_memory_with_metrics(memory_bf, &memory_metrics_bf, 3);
+    print_memory_with_metrics(memory_wf, &memory_metrics_wf, 4);
 
     printf("\nLIST DE PROCESSOS NEGADOS\n");
     print_queue(&denied_process_ff);

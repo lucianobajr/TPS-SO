@@ -14,6 +14,7 @@
         "main_memory.h": "c",
         "list.h": "c",
         "metrics.h": "c",
-        "type_traits": "c"
+        "type_traits": "c",
+        "domain.h": "c"
     }
 }

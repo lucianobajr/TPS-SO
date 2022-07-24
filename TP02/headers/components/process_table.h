@@ -21,6 +21,7 @@ typedef struct
     int inital_time;     // utiliza o tempo do gerenciador de processos como tempo inicial
     int cpu_time;        // contabiliza quantas instruções foram lidas
     simulated_process *process_reference;
+    int memory_index;
 } process_table;
 
 #endif

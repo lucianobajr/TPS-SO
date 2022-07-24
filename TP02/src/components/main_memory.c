@@ -2,16 +2,31 @@
 #include "../../headers/components/virtual_memory.h"
 #include "../../headers/log/log.h"
 
-void print_text_main_memory()
+void print_text_main_memory(int type)
 {
     printf("=============================================================================\n");
-    printf("|                             MEMÓRIA PRINCIPAL                             |\n");
+    if (type == 1)
+    {
+        printf("|                           MEMÓRIA PRINCIPAL - \033[38;5;196mFF\e[1;97m                          |\n");
+    }
+    if (type == 2)
+    {
+        printf("|                           MEMÓRIA PRINCIPAL - \033[38;5;196mNF\e[1;97m                          |\n");
+    }
+    if (type == 3)
+    {
+        printf("|                           MEMÓRIA PRINCIPAL - \033[38;5;196mBF\e[1;97m                          |\n");
+    }
+    if (type == 4)
+    {
+        printf("|                           MEMÓRIA PRINCIPAL - \033[38;5;196mWF\e[1;97m                          |\n");
+    }
     printf("=============================================================================\n");
 }
 
-void print_main_memory(main_memory *memory)
+void print_main_memory(main_memory *memory, int type)
 {
-    print_text_main_memory();
+    print_text_main_memory(type);
 
     int total_iterations_allocated, total_iterations_empty;
 
@@ -35,6 +50,8 @@ void print_main_memory(main_memory *memory)
 
         printf("\e[1;30m [%dkb] \e[0m \e[0m \n", memory[i].empty);
     }
+
+    printf("\n");
 }
 
 void generate()
@@ -77,7 +94,6 @@ main_memory *init_main_memory()
         memory[index].empty = value;
         memory[index].allocated = 0;
     }
-    
 
     return memory;
 }
@@ -98,7 +114,7 @@ int highest_value_in_memory(main_memory *memory)
     return highest_value + ((highest_value * 40) / 100);
 }
 
-void first_fit(main_memory *memory, metrics *memory_metrics, queue *denied_process, int process_size)
+int first_fit(main_memory *memory, metrics *memory_metrics, queue *denied_process, int process_size)
 {
 
     int index = -1;
@@ -130,9 +146,11 @@ void first_fit(main_memory *memory, metrics *memory_metrics, queue *denied_proce
         to_queue(denied_process, process_size);
         increment_denied_allocation_request(memory_metrics);
     }
+
+    return index;
 }
 
-void best_fit(main_memory *memory, metrics *memory_metrics, queue *denied_process, int process_size)
+int best_fit(main_memory *memory, metrics *memory_metrics, queue *denied_process, int process_size)
 {
     int index = -1;
 
@@ -166,9 +184,11 @@ void best_fit(main_memory *memory, metrics *memory_metrics, queue *denied_proces
         to_queue(denied_process, process_size);
         increment_denied_allocation_request(memory_metrics);
     }
+
+    return index;
 }
 
-void worst_fit(main_memory *memory, metrics *memory_metrics, queue *denied_process, int process_size)
+int worst_fit(main_memory *memory, metrics *memory_metrics, queue *denied_process, int process_size)
 {
     int index = -1;
 
@@ -202,9 +222,11 @@ void worst_fit(main_memory *memory, metrics *memory_metrics, queue *denied_proce
         to_queue(denied_process, process_size);
         increment_denied_allocation_request(memory_metrics);
     }
+
+    return index;
 }
 
-void next_fit(main_memory *memory, metrics *memory_metrics, queue *denied_process, int process_size, int *next_fit_index)
+int next_fit(main_memory *memory, metrics *memory_metrics, queue *denied_process, int process_size, int *next_fit_index)
 {
     int index = -1;
 
@@ -246,6 +268,8 @@ void next_fit(main_memory *memory, metrics *memory_metrics, queue *denied_proces
         to_queue(denied_process, process_size);
         increment_denied_allocation_request(memory_metrics);
     }
+
+    return index;
 }
 
 int external_fragments(main_memory *memory)
@@ -266,7 +290,7 @@ void deallocate(main_memory *memory, int index)
     memory[index].allocated = 0;
 }
 
-void print_memory_with_metrics(main_memory *memory, metrics *memory_metrics)
+void print_memory_with_metrics(main_memory *memory, metrics *memory_metrics, int type)
 {
     float one = average_number_of_external_fragments(memory_metrics);
     float two = average_allocation_time(memory_metrics);
@@ -274,7 +298,26 @@ void print_memory_with_metrics(main_memory *memory, metrics *memory_metrics)
 
     printf("\n");
     printf("\t     ====================================\n");
-    printf("\t     |       \e[1;93mPERFORMANCE PARAMETERS  \033[0m   |\n");
+
+    if (type == 1)
+    {
+        printf("\t     |    \e[1;93mPERFORMANCE PARAMETERS - \033[38;5;196mFF\e[1;97m   |\n");
+    }
+    if (type == 2)
+    {
+        printf("\t     |    \e[1;93mPERFORMANCE PARAMETERS - \033[38;5;196mNF\e[1;97m   |\n");
+    }
+    if (type == 3)
+    {
+        printf("\t     |    \e[1;93mPERFORMANCE PARAMETERS - \033[38;5;196mBF\e[1;97m   |\n");
+    }
+    if (type == 4)
+    {
+        printf("\t     |    \e[1;93mPERFORMANCE PARAMETERS - \033[38;5;196mWF\e[1;97m   |\n");
+    }
+
+    
+
     printf("\t     ====================================\n");
     printf("\t     | \033[38;5;196m    (1)   \033[0m | \033[38;5;196m  (2)  \033[0m | \033[38;5;196m   (3)  \033[0m  |\n");
     printf("\033[0m");
@@ -283,7 +326,10 @@ void print_memory_with_metrics(main_memory *memory, metrics *memory_metrics)
     three > 0.00 ? printf("\t     | \e[1;97m  %.2f \033[0m | \e[1;97m  %.2f \033[0m | \e[1;97m  %2.2f%% \033[0m |\n", one, two, three) : printf("\t     | \e[1;97m  %.2f  \033[0m| \e[1;97m  %.2f \033[0m | \e[1;97m  %2.2f%%  \033[0m |\n", one, two, three);
     printf("\033[0m");
     printf("\t     ====================================\n\n");
+}
 
+void print_legend_memory_with_metrics()
+{
     printf("==============================================================\n");
     printf("|                           \e[1;93mLEGEND\033[0m                           |\n");
     printf("==============================================================\n");
