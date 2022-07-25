@@ -1,6 +1,6 @@
 #include "../../headers/core/management.h"
 
-void init_management(management *management, char *file_name, int size, scheduler_policy type_escalation_policy)
+void init_management(management *management, domain *process_manager_domain, char *file_name, int size, scheduler_policy type_escalation_policy)
 {
     management->time = 0;
     management->process_table = (process_table *)malloc(sizeof(process_table));
@@ -19,6 +19,8 @@ void init_management(management *management, char *file_name, int size, schedule
     management->process_table[0].inital_time = management->time;
     management->process_table[0].priority = 0;
     management->process_table[0].state = EXECUTING;
+    allocate_new_process(process_manager_domain, &management->process_table[0], TRUE);
+    print_memories(process_manager_domain);
 
     // Processo está pronto para executar
     /* Variável armazena o tamanho da tabela de processos, tal valor subtraído de 1 gera o índice do processo na tabela */
@@ -71,7 +73,7 @@ char *read_instructions_file(CPU *cpu)
     return line;
 }
 
-void create_new_process(management *management, domain *process_manager_domain,int number_of_instructions, int size, int pid)
+void create_new_process(management *management, domain *process_manager_domain, int number_of_instructions, int size, int pid)
 {
     // Cria processo
     simulated_process *create_child_process = (simulated_process *)malloc(sizeof(simulated_process));
@@ -112,7 +114,7 @@ void create_new_process(management *management, domain *process_manager_domain,i
     management->process_table[(size - 1)].priority = management->process_table[management->executing_state].priority;
     management->process_table[(size - 1)].data_structure = create_child_process->memory;
 
-    allocate_new_process(process_manager_domain,&management->process_table[(size - 1)],FALSE);
+    allocate_new_process(process_manager_domain, &management->process_table[(size - 1)], FALSE);
 
     // Processo filho criado com estado pronto, adiciona na estrutura do tipo de escalonador escolhido
     if (management->type_escalation_policy == MULTIPLE_QUEUES)

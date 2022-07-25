@@ -31,7 +31,7 @@ typedef struct
 /*
  * Inicializa o Gerenciador de Processos
  */
-void init_management(management *management, char *file_name, int size, scheduler_policy type_escalation_policy);
+void init_management(management *management, domain *process_manager_domain, char *file_name, int size, scheduler_policy type_escalation_policy);
 
 /*
  * Leitura do arquivo de instruções

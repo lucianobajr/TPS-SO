@@ -103,9 +103,7 @@ int control(scheduler_policy type_escalation_policy)
 
         close(fd[1]); // fecha o pipe de escrita para não ter risco de leak de memoria - ou dar outra coisa ruim pois é uma chamada de sistema
 
-        init_management(&process_manager, name, size, type_escalation_policy);
-        allocate_new_process(&process_manager_domain, &process_manager.process_table[0], TRUE);
-        print_memories(&process_manager_domain);
+        init_management(&process_manager, &process_manager_domain, name, size, type_escalation_policy);
 
         do
         {
