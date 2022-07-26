@@ -1,5 +1,6 @@
 #include "../../headers/core/control.h"
 #include "../../headers/components/main_memory.h"
+#include "../../headers/components/virtual_memory.h"
 
 int control(scheduler_policy type_escalation_policy)
 {

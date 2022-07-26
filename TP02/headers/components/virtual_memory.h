@@ -5,7 +5,6 @@
 #include <time.h>
 #include <stdbool.h>
 
-// Needs to decide the size of everything
 #define PAGE_TABLE_SIZE 256
 #define BUFFER_SIZE 256
 #define PHYS_MEM_SIZE 256
@@ -19,15 +18,25 @@ typedef struct TLB
     int ind; //To address each allocated block
 }TLB;
 
-// Generate address
+/*
+ *  Gera os endereços de forma randômica com um range de 0 a 65536
+ */
 void generate_address();
-//
+/*
+ * 
+ */
 int read_from_disk (int page_num, char *PM, int* OF);
-// Initialize TLB
+/*
+ * 
+ */
 int find_page(int logical_addr, char* PT, TLB *tlb, char* PM, int* OF, int* page_faults, int* TLB_hits);
-// Turn a block of proccess into memory address
+/* 
+ *  Turn a block of proccess into memory address
+ */
 int made_address(main_memory *main_memory); 
-// Function to translate the virtual address to translate to the physic memory
+/* 
+ *  Function to translate the virtual address to translate to the physic memory
+ */
 int compute_address(int address, int index, TLB *tlb);
 
 #endif

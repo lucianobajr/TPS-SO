@@ -9,7 +9,9 @@ void generate_address()
     int num;
     srand(time(0));
 
-    fptr = fopen("data/address.txt", "w");
+    const char *path1 = "data/address.txt";  
+    
+    fptr = fopen(path1, "w");
 
     for (int i = 0; i < SIZE; i++)
     {
@@ -34,7 +36,7 @@ int read_from_disk (int page_num, char *PM, int* OF){
     return (*OF)-1;
 }
 
-int find_page(int logical_addr, char* PT, TLB *tlb, char* PM, int* OF, int* page_faults, int* TLB_hits){
+int find_page(int logical_addr, char* page_table, TLB *tlb, char* phys_mem, int* OF, int* page_faults, int* TLB_hits){
 
     unsigned char mask = 0xFF;
     unsigned char offset;
@@ -44,7 +46,7 @@ int find_page(int logical_addr, char* PT, TLB *tlb, char* PM, int* OF, int* page
     int new_frame = 0;
     int i;
 
-	printf("Virtual adress: %d\t", logical_addr);
+	printf("Virtual adress: %d ->\t", logical_addr);
 
     page_num = (logical_addr >> 8) & mask;
 
@@ -58,19 +60,19 @@ int find_page(int logical_addr, char* PT, TLB *tlb, char* PM, int* OF, int* page
     }
 
     if (TLB_hit == false){
-        if (PT[page_num] != -1){
+        if (page_table[page_num] != -1){
             printf("Pagehit\t\t");
         }
 
         else{
-            
-            new_frame = read_from_disk(page_num, PM, OF);
-            PT[page_num] = new_frame;
+            // Criação de uma nova moldura
+            new_frame = read_from_disk(page_num, phys_mem, OF);
+            page_table[page_num] = new_frame;
             (*page_faults)++;
         }
-        frame = PT[page_num];
+        frame = page_table[page_num];
         tlb->TLB_page[tlb->ind] = page_num;
-        tlb->TLB_frame[tlb->ind] = PT[page_num];
+        tlb->TLB_frame[tlb->ind] = page_table[page_num];
         tlb->ind = (tlb->ind + 1)%TLB_SIZE;
     }
     int index = ((unsigned char)frame*PHYS_MEM_SIZE)+offset;

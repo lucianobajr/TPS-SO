@@ -28,6 +28,28 @@ void print_main_memory(main_memory *memory, int type)
 {
     print_text_main_memory(type);
 
+    FILE *fpointer;
+    TLB tlb;
+    bool allocated = true;
+    int open_frame = 0;
+    int page_faults = 0;
+    int TLB_hits = 0;
+
+    unsigned char page_table[PAGE_TABLE_SIZE];
+    memset(page_table, -1, sizeof(page_table));
+
+    memset(tlb.TLB_page, -1, sizeof(tlb.TLB_page));
+    memset(tlb.TLB_frame, -1, sizeof(tlb.TLB_frame));
+    tlb.ind = 0;
+
+    char phy_mem[PHYS_MEM_SIZE][PHYS_MEM_SIZE];
+
+    fpointer = fopen("data/address.txt", "r");
+    if (fpointer == NULL){
+        printf("Fail trying to open the file!!!\n");
+        exit(0);
+    }
+
     int total_iterations_allocated, total_iterations_empty;
 
     for (int i = 0; i < SIZE; i++)
@@ -49,6 +71,9 @@ void print_main_memory(main_memory *memory, int type)
         }
 
         printf("\e[1;30m [%dkb] \e[0m \e[0m \n", memory[i].empty);
+        
+        memory[i].allocated == 0 ? allocated = false : find_page(memory[i].address, page_table, &tlb, (char*)phy_mem, &open_frame, &page_faults, &TLB_hits);
+
     }
 
     printf("\n");
@@ -94,7 +119,7 @@ main_memory *init_main_memory()
         memory[index].empty = value;
         memory[index].allocated = 0;
     }
-
+    made_address(memory);
     return memory;
 }
 
