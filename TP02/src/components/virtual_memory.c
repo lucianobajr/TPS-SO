@@ -35,7 +35,7 @@ int read_from_disk(int page_num, char *PM, int *OF)
     return (*OF) - 1;
 }
 
-int find_page(int logical_addr, char *page_table, TLB *tlb, char *phys_mem, int *OF, int *page_faults, int *TLB_hits)
+int find_page(int logical_addr, char *page_table, TLB *tlb, char *phys_mem, int *OF)
 {
 
     unsigned char mask = 0xFF;
@@ -57,7 +57,6 @@ int find_page(int logical_addr, char *page_table, TLB *tlb, char *phys_mem, int 
         {
             frame = tlb->TLB_frame[i];
             TLB_hit = true;
-            (*TLB_hits)++;
         }
     }
 
@@ -73,7 +72,6 @@ int find_page(int logical_addr, char *page_table, TLB *tlb, char *phys_mem, int 
             // Criação de uma nova moldura
             new_frame = read_from_disk(page_num, phys_mem, OF);
             page_table[page_num] = new_frame;
-            (*page_faults)++;
         }
         frame = page_table[page_num];
         tlb->TLB_page[tlb->ind] = page_num;
@@ -88,7 +86,7 @@ int find_page(int logical_addr, char *page_table, TLB *tlb, char *phys_mem, int 
 
 int made_address(main_memory *main_memory)
 {
-    
+
     FILE *fpointer;
     int address;
     int i = 0;

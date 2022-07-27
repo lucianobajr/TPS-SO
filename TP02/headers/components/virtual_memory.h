@@ -35,7 +35,7 @@ int read_from_disk (int page_num, char *PM, int* OF);
 /*
  * Encontra a página na memória virtual
  */
-int find_page(int logical_addr, char* PT, TLB *tlb, char* PM, int* OF, int* page_faults, int* TLB_hits);
+int find_page(int logical_addr, char* PT, TLB *tlb, char* PM, int* OF);
 /* 
  *  Associar cada bloco da memória a um endereço virtual
  */
