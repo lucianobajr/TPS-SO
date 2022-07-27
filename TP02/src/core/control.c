@@ -181,7 +181,10 @@ int control(scheduler_policy type_escalation_policy)
                     }
                     break;
                 case 'T':
+                    deallocate_process_domain(&process_manager_domain, process_manager.process_table, process_manager.executing_state);
+                    relocate_process(&process_manager_domain, process_manager.process_table);
                     end_simulated_process(&(process_manager), &size, &max_process);
+                    print_memories(&(process_manager_domain));
                     break;
                 case 'F':
                     size++;
@@ -207,6 +210,7 @@ int control(scheduler_policy type_escalation_policy)
             case 'M':
                 print_memories(&process_manager_domain);
                 print_metrics(&process_manager_domain);
+                print_queue_denied_process(&process_manager_domain);
                 command_m(pid2, process_manager, size, total_of_process, max_process);
                 break;
             default:

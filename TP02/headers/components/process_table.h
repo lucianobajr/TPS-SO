@@ -7,7 +7,8 @@ typedef enum
 {
     EXECUTING,
     BLOCKED,
-    READY
+    READY,
+    ADMISSION
 } states;
 
 typedef struct

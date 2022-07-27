@@ -45,7 +45,8 @@ void print_main_memory(main_memory *memory, int type)
     char phy_mem[PHYS_MEM_SIZE][PHYS_MEM_SIZE];
 
     fpointer = fopen("data/address.txt", "r");
-    if (fpointer == NULL){
+    if (fpointer == NULL)
+    {
         printf("Fail trying to open the file!!!\n");
         exit(0);
     }
@@ -71,9 +72,8 @@ void print_main_memory(main_memory *memory, int type)
         }
 
         printf("\e[1;30m [%dkb] \e[0m \e[0m \n", memory[i].empty);
-        
-        memory[i].allocated == 0 ? allocated = false : find_page(memory[i].address, page_table, &tlb, (char*)phy_mem, &open_frame, &page_faults, &TLB_hits);
 
+        memory[i].allocated == 0 ? allocated = false : find_page(memory[i].address, page_table, &tlb, (char *)phy_mem, &open_frame, &page_faults, &TLB_hits);
     }
 
     printf("\n");
@@ -139,10 +139,9 @@ int highest_value_in_memory(main_memory *memory, int using_40_percent)
     return using_40_percent ? highest_value + ((highest_value * 40) / 100) : highest_value;
 }
 
-int first_fit(main_memory *memory, metrics *memory_metrics, queue *denied_process, int process_size)
+int first_fit(main_memory *memory, metrics *memory_metrics, queue_custom *denied_process, int index, int process_size)
 {
-
-    int index = -1;
+    int possible_process_index = -1;
 
     increment_total_allocation_request(memory_metrics);
 
@@ -150,34 +149,33 @@ int first_fit(main_memory *memory, metrics *memory_metrics, queue *denied_proces
     // according to its size ad assign to it
     for (int i = 0; i < SIZE; i++) // here, n -> number of processes
     {
-
         // allocated > 0 ?
         if (memory[i].empty >= process_size && memory[i].allocated == 0)
         {
-            index = i;
+            possible_process_index = i;
             break; // go to the next process in the queue
         }
     }
 
-    if (index != -1)
+    if (possible_process_index != -1)
     {
-        memory[index].empty = memory[index].empty - process_size;
-        memory[index].allocated = process_size;
+        memory[possible_process_index].empty = memory[possible_process_index].empty - process_size;
+        memory[possible_process_index].allocated = process_size;
 
-        add_node_traveled(memory_metrics, index);
+        add_node_traveled(memory_metrics, possible_process_index);
     }
     else
     {
-        to_queue(denied_process, process_size);
+        to_queue_custom(denied_process, index, process_size);
         increment_denied_allocation_request(memory_metrics);
     }
 
-    return index;
+    return possible_process_index;
 }
 
-int best_fit(main_memory *memory, metrics *memory_metrics, queue *denied_process, int process_size)
+int best_fit(main_memory *memory, metrics *memory_metrics, queue_custom *denied_process, int index, int process_size)
 {
-    int index = -1;
+    int possible_process_index = -1;
 
     increment_total_allocation_request(memory_metrics);
 
@@ -185,11 +183,11 @@ int best_fit(main_memory *memory, metrics *memory_metrics, queue *denied_process
     {
         if (memory[j].allocated == 0 && (memory[j].empty >= process_size))
         {
-            if (index == -1)
+            if (possible_process_index == -1)
             {
-                index = j;
+                possible_process_index = j;
             }
-            else if (memory[j].empty < memory[index].empty)
+            else if (memory[j].empty < memory[possible_process_index].empty)
             {
                 index = j;
             }
@@ -197,25 +195,25 @@ int best_fit(main_memory *memory, metrics *memory_metrics, queue *denied_process
     }
 
     // If we could find a block for current process
-    if (index != -1)
+    if (possible_process_index != -1)
     {
-        memory[index].empty = memory[index].empty - process_size;
-        memory[index].allocated = process_size;
+        memory[possible_process_index].empty = memory[possible_process_index].empty - process_size;
+        memory[possible_process_index].allocated = process_size;
 
-        add_node_traveled(memory_metrics, index);
+        add_node_traveled(memory_metrics, possible_process_index);
     }
     else
     {
-        to_queue(denied_process, process_size);
+        to_queue_custom(denied_process, index, process_size);
         increment_denied_allocation_request(memory_metrics);
     }
 
-    return index;
+    return possible_process_index;
 }
 
-int worst_fit(main_memory *memory, metrics *memory_metrics, queue *denied_process, int process_size)
+int worst_fit(main_memory *memory, metrics *memory_metrics, queue_custom *denied_process, int index, int process_size)
 {
-    int index = -1;
+    int possible_process_index = -1;
 
     increment_total_allocation_request(memory_metrics);
 
@@ -223,37 +221,37 @@ int worst_fit(main_memory *memory, metrics *memory_metrics, queue *denied_proces
     {
         if (memory[j].allocated == 0 && (memory[j].empty >= process_size))
         {
-            if (index == -1)
+            if (possible_process_index == -1)
             {
-                index = j;
+                possible_process_index = j;
             }
-            else if (memory[j].empty >= memory[index].empty)
+            else if (memory[j].empty >= memory[possible_process_index].empty)
             {
-                index = j;
+                possible_process_index = j;
             }
         }
     }
 
     // If we could find a block for current process
-    if (index != -1)
+    if (possible_process_index != -1)
     {
-        memory[index].empty = memory[index].empty - process_size;
-        memory[index].allocated = process_size;
+        memory[possible_process_index].empty = memory[possible_process_index].empty - process_size;
+        memory[possible_process_index].allocated = process_size;
 
-        add_node_traveled(memory_metrics, index);
+        add_node_traveled(memory_metrics, possible_process_index);
     }
     else
     {
-        to_queue(denied_process, process_size);
+        to_queue_custom(denied_process, index, process_size);
         increment_denied_allocation_request(memory_metrics);
     }
 
-    return index;
+    return possible_process_index;
 }
 
-int next_fit(main_memory *memory, metrics *memory_metrics, queue *denied_process, int process_size, int *next_fit_index)
+int next_fit(main_memory *memory, metrics *memory_metrics, queue_custom *denied_process, int index, int process_size, int *next_fit_index)
 {
-    int index = -1;
+    int possible_process_index = -1;
 
     increment_total_allocation_request(memory_metrics);
 
@@ -266,7 +264,7 @@ int next_fit(main_memory *memory, metrics *memory_metrics, queue *denied_process
         // allocated > 0 ?
         if (memory[*(next_fit_index)].allocated == 0 && memory[*(next_fit_index)].empty >= process_size)
         {
-            index = i;
+            possible_process_index = i;
             *(next_fit_index) += 1;
             break; // go to the next process in the queue
         }
@@ -281,20 +279,20 @@ int next_fit(main_memory *memory, metrics *memory_metrics, queue *denied_process
         }
     }
 
-    if (index != -1)
+    if (possible_process_index != -1)
     {
-        memory[index].empty = memory[index].empty - process_size;
-        memory[index].allocated = process_size;
+        memory[possible_process_index].empty = memory[possible_process_index].empty - process_size;
+        memory[possible_process_index].allocated = process_size;
 
-        add_node_traveled(memory_metrics, index);
+        add_node_traveled(memory_metrics, possible_process_index);
     }
     else
     {
-        to_queue(denied_process, process_size);
+        to_queue_custom(denied_process, index, process_size);
         increment_denied_allocation_request(memory_metrics);
     }
 
-    return index;
+    return possible_process_index;
 }
 
 int external_fragments(main_memory *memory)

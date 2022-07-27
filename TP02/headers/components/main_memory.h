@@ -7,7 +7,7 @@
 #include <time.h>
 
 #include "../../headers/metrics/metrics.h"
-#include "../../headers/shared/queue.h"
+#include "../../headers/shared/custom/queue_custom.h"
 
 // 2*1024
 // Processo tem 2 MB de memória
@@ -35,27 +35,27 @@ main_memory *init_main_memory();
 /*
  *  Irá alocar o processo no primeiro espaço livre do array
  */
-int first_fit(main_memory *memory, metrics *memory_metrics, queue *denied_process, int process_size);
+int first_fit(main_memory *memory, metrics *memory_metrics, queue_custom *denied_process, int index, int process_size);
 
 /*
  * Firt fit porém ele começa como o primeiro ajuste para encontrar
  * uma partição livre, mas quando chamado na próxima vez, ele
  * começa a procurar de onde parou, não desde o início.
  */
-int next_fit(main_memory *memory, metrics *memory_metrics, queue *denied_process, int process_size, int *next_fit_index);
+int next_fit(main_memory *memory, metrics *memory_metrics, queue_custom *denied_process, int index, int process_size, int *next_fit_index);
 
 /*
  * Irá percorrer toda a lista para encontrar o espaço que
  * desperdiçará o mínimo possível
  */
-int best_fit(main_memory *memory, metrics *memory_metrics, queue *denied_process, int process_size);
+int best_fit(main_memory *memory, metrics *memory_metrics, queue_custom *denied_process, int index, int process_size);
 
 /*
  * Irá percorrer toda a lista para encontrar o espaço que
  * “desperdiçará” o máximo possível, esse espaço desperdiçado
  * pode ser depois alocado para outro processo
  */
-int worst_fit(main_memory *memory, metrics *memory_metrics, queue *denied_process, int process_size);
+int worst_fit(main_memory *memory, metrics *memory_metrics, queue_custom *denied_process, int index, int process_size);
 
 /*
  * Printa o texto da antes de printar a memória

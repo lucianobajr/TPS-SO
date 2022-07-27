@@ -19,7 +19,7 @@ void init_management(management *management, domain *process_manager_domain, cha
     management->process_table[0].inital_time = management->time;
     management->process_table[0].priority = 0;
     management->process_table[0].state = EXECUTING;
-    allocate_new_process(process_manager_domain, &management->process_table[0], TRUE);
+    allocate_new_process(process_manager_domain, &management->process_table[0], 0, TRUE);
     print_memories(process_manager_domain);
 
     // Processo está pronto para executar
@@ -114,7 +114,7 @@ void create_new_process(management *management, domain *process_manager_domain, 
     management->process_table[(size - 1)].priority = management->process_table[management->executing_state].priority;
     management->process_table[(size - 1)].data_structure = create_child_process->memory;
 
-    allocate_new_process(process_manager_domain, &management->process_table[(size - 1)], FALSE);
+    allocate_new_process(process_manager_domain, &management->process_table[(size - 1)], (size - 1), FALSE);
 
     // Processo filho criado com estado pronto, adiciona na estrutura do tipo de escalonador escolhido
     if (management->type_escalation_policy == MULTIPLE_QUEUES)
@@ -309,6 +309,9 @@ void print_management(management *management, int size, int number_of_process, i
         case BLOCKED:
             strcpy(state_string, "blocked");
             break;
+        case ADMISSION:
+            strcpy(state_string, "admission");
+            break;
         default:
             break;
         }
@@ -335,6 +338,11 @@ void print_management(management *management, int size, int number_of_process, i
             break;
         case BLOCKED:
             printf("\033[38;5;1m");
+            printf(" %-12s", state_string);
+            printf("\033[0m |");
+            break;
+        case ADMISSION:
+            printf("\033[38;5;208m");
             printf(" %-12s", state_string);
             printf("\033[0m |");
             break;

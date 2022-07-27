@@ -12,7 +12,7 @@
 #include "../../headers/components/main_memory.h"
 #include "../../headers/components/process_table.h"
 #include "../../headers/metrics/metrics.h"
-#include "../../headers/shared/queue.h"
+#include "../../headers/shared/custom/queue_custom.h"
 #include "../../headers/shared/list.h"
 
 typedef struct
@@ -29,10 +29,10 @@ typedef struct
     metrics memory_metrics_best_fit;  // métricas => best fit
     metrics memory_metrics_worst_fit; // métricas => worst fit
 
-    queue denied_process_first_fit; // fila de processos negados => first fit
-    queue denied_process_next_fit;  // fila de processos negados => next fit
-    queue denied_process_best_fit;  // fila de processos negados => best fit
-    queue denied_process_worst_fit; // fila de processos negados => worst fit
+    queue_custom denied_process_first_fit; // fila de processos negados => first fit
+    queue_custom denied_process_next_fit;  // fila de processos negados => next fit
+    queue_custom denied_process_best_fit;  // fila de processos negados => best fit
+    queue_custom denied_process_worst_fit; // fila de processos negados => worst fit
 
     int next_fit_index;
 } domain;
@@ -50,7 +50,7 @@ void allocation_algorithms_used(domain *process_manager_domain);
 /*
  * Aloca um novo processo na memória
  */
-void allocate_new_process(domain *process_manager_domain, process_table *new_process, int first_process);
+void allocate_new_process(domain *process_manager_domain, process_table *new_process, int process_index, int first_process);
 
 /*
  * Printa as memórias
@@ -70,6 +70,16 @@ int highest_value_by_allocation_algorithms(domain *process_manager_domain, int u
 /*
  * Quando houvesse a liberação de memória por um processo, a alocação deste processo poderia ser tentada novamente.
  */
-void relocate_process(domain *process_manager_domain);
+void relocate_process(domain *process_manager_domain,process_table *new_process);
+
+/*
+* Desaloca um processo
+*/
+void deallocate_process_domain(domain *process_manager_domain, process_table *new_process,int executing_state);
+
+/*
+* Printa os valores dos processos negados
+*/
+void print_queue_denied_process(domain *process_manager_domain);
 
 #endif
