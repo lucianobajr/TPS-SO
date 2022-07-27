@@ -42,35 +42,30 @@ void init_domain(domain *process_manager_domain)
     {
         if (aux_pointer_list->content.value == FIRST_FIT)
         {
-            //            generate_address(1);
             process_manager_domain->memory_first_fit = init_main_memory();
             initialize_metrics(&process_manager_domain->memory_metrics_first_fit);
             init_queue_custom(&process_manager_domain->denied_process_first_fit);
-            //    made_address(process_manager_domain->memory_first_fit);
         }
         if (aux_pointer_list->content.value == NEXT_FIT)
         {
-            //            generate_address(2);
             process_manager_domain->memory_next_fit = init_main_memory();
             initialize_metrics(&process_manager_domain->memory_metrics_next_fit);
             init_queue_custom(&process_manager_domain->denied_process_next_fit);
-            //    made_address(process_manager_domain->memory_next_fit);
         }
         if (aux_pointer_list->content.value == BEST_FIT)
         {
-            //            generate_address(3);
+           
             process_manager_domain->memory_best_fit = init_main_memory();
             initialize_metrics(&process_manager_domain->memory_metrics_best_fit);
             init_queue_custom(&process_manager_domain->denied_process_best_fit);
-            //    made_address(process_manager_domain->memory_best_fit);
         }
         if (aux_pointer_list->content.value == WORST_FIT)
         {
-            //            generate_address(4);
+           
             process_manager_domain->memory_worst_fit = init_main_memory();
             initialize_metrics(&process_manager_domain->memory_metrics_worst_fit);
             init_queue_custom(&process_manager_domain->denied_process_worst_fit);
-            //    made_address(process_manager_domain->memory_worst_fit);
+           
         }
 
         aux_pointer_list = aux_pointer_list->next;

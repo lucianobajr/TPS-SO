@@ -32,8 +32,6 @@ void print_main_memory(main_memory *memory, int type)
     TLB tlb;
     bool allocated = true;
     int open_frame = 0;
-    int page_faults = 0;
-    int TLB_hits = 0;
 
     unsigned char page_table[PAGE_TABLE_SIZE];
     memset(page_table, -1, sizeof(page_table));
@@ -73,10 +71,8 @@ void print_main_memory(main_memory *memory, int type)
 
         printf("\e[1;30m [%dkb] \e[0m \e[0m \n", memory[i].empty);
 
-        memory[i].allocated == 0 ? allocated = false : find_page(memory[i].address, page_table, &tlb, (char *)phy_mem, &open_frame, &page_faults, &TLB_hits);
+        memory[i].allocated == 0 ? allocated = false : find_page(memory[i].address, page_table, &tlb, (char *)phy_mem, &open_frame);
     }
-
-    printf("\n");
 }
 
 void generate()
