@@ -6,5 +6,4 @@ Simulação, do que consiste um gerenciamento de processos em ambiente Linux. Pa
 
 ![print_1](https://user-images.githubusercontent.com/45442173/177600599-bbe8dd19-236a-4d00-910b-ee9f5a7f534f.png)
 
-
 ## TP02
