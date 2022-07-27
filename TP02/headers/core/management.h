@@ -7,6 +7,7 @@
 #include "./scheduling.h"
 #include "../components/cpu.h"
 #include "../components/process_table.h"
+#include "../domain/domain.h"
 #include "../log/log.h"
 
 typedef enum
@@ -18,19 +19,19 @@ typedef enum
 typedef struct
 {
     CPU cpu;
-    process_table *process_table; // É um vetor 
+    process_table *process_table; // É um vetor
     int executing_state;          // armazena o indice do processo do vetor da TabelaDeProcessos que esta em execucao
     queue ready;                  // enfilera os indices dos processos em estado pronto
     queue blocked;                // enfileira os indices dos processos em estado de bloqueio
-    scheduling scheduler;       
-    int time;                    // incrementado a cada instrução lida
+    scheduling scheduler;
+    int time; // incrementado a cada instrução lida
     scheduler_policy type_escalation_policy;
 } management;
 
 /*
  * Inicializa o Gerenciador de Processos
  */
-void init_management(management *management, char *file_name, int size, scheduler_policy type_escalation_policy);
+void init_management(management *management, domain *process_manager_domain, char *file_name, int size, scheduler_policy type_escalation_policy);
 
 /*
  * Leitura do arquivo de instruções
@@ -40,7 +41,7 @@ char *read_instructions_file(CPU *cpu);
 /*
  * Cria um novo processo
  */
-void create_new_process(management *management, int number_of_instructions, int size, int pid);
+void create_new_process(management *management, domain *process_manager_domain, int number_of_instructions, int size, int pid);
 
 /*
  * Carrega o processo na CPU
@@ -75,7 +76,7 @@ void print_management(management *management, int size, int number_of_process, i
 int verify_quantum(management *management);
 
 /*
- * Multiple-Level Queues 
+ * Multiple-Level Queues
  */
 void multiple_queues(management management);
 /*

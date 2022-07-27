@@ -29,4 +29,3 @@ void instruction_s(int index, int value, int **memory)
 {
     (*memory)[index] = (*memory)[index] - value;
 }
-

@@ -12,7 +12,6 @@ void logger(char *text, int color)
     }
     else if (color == COMMUN_COLOR)
     {
-        //printf("\033[38;5;4m");
         printf("\033[38;5;68m");
     }
 

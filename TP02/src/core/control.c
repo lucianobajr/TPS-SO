@@ -1,4 +1,6 @@
 #include "../../headers/core/control.h"
+#include "../../headers/components/main_memory.h"
+#include "../../headers/components/virtual_memory.h"
 
 int control(scheduler_policy type_escalation_policy)
 {
@@ -7,6 +9,9 @@ int control(scheduler_policy type_escalation_policy)
     int input_type;
     int fd[2]; /* Descritores de arquivo para o pipe, posições: 0 leitura - 1 escrita */
     pid_t pid; /* Variável para o fork*/
+
+    domain process_manager_domain;
+    init_domain(&process_manager_domain);
 
     if (pipe(fd) == -1)
     {
@@ -99,7 +104,7 @@ int control(scheduler_policy type_escalation_policy)
 
         close(fd[1]); // fecha o pipe de escrita para não ter risco de leak de memoria - ou dar outra coisa ruim pois é uma chamada de sistema
 
-        init_management(&process_manager, name, size, type_escalation_policy);
+        init_management(&process_manager, &process_manager_domain, name, size, type_escalation_policy);
 
         do
         {
@@ -176,12 +181,17 @@ int control(scheduler_policy type_escalation_policy)
                     }
                     break;
                 case 'T':
+                    deallocate_process_domain(&process_manager_domain, process_manager.process_table, process_manager.executing_state);
+                    relocate_process(&process_manager_domain, process_manager.process_table);
                     end_simulated_process(&(process_manager), &size, &max_process);
+                    print_memories(&(process_manager_domain));
                     break;
                 case 'F':
                     size++;
                     total_of_process++;
-                    create_new_process(&process_manager, atoi(&(instruction[2])), size, total_of_process - 1);
+                    create_new_process(&process_manager, &process_manager_domain, atoi(&(instruction[2])), size, total_of_process - 1);
+                    print_memories(&process_manager_domain);
+
                     break;
                 case 'R':
                     replace_current_image_process(&process_manager, instruction);
@@ -198,6 +208,9 @@ int control(scheduler_policy type_escalation_policy)
                 command_i(pid2, process_manager, size, total_of_process, max_process);
                 break;
             case 'M':
+                print_memories(&process_manager_domain);
+                print_metrics(&process_manager_domain);
+                print_queue_denied_process(&process_manager_domain);
                 command_m(pid2, process_manager, size, total_of_process, max_process);
                 break;
             default:

@@ -10,6 +10,12 @@
         "program.h": "c",
         "simulated_process.h": "c",
         "process_table.h": "c",
-        "log.h": "c"
+        "log.h": "c",
+        "main_memory.h": "c",
+        "list.h": "c",
+        "metrics.h": "c",
+        "type_traits": "c",
+        "domain.h": "c",
+        "management.h": "c"
     }
 }

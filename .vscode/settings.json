@@ -1,0 +1,9 @@
+{
+    "files.associations": {
+        "stdlib.h": "c",
+        "list.h": "c",
+        "queue_custom.h": "c",
+        "main_memory.h": "c",
+        "process_table.h": "c"
+    }
+}
