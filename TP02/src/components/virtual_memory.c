@@ -46,7 +46,9 @@ int find_page(int logical_addr, char *page_table, TLB *tlb, char *phys_mem, int 
     int new_frame = 0;
     int i;
 
-    printf("Virtual adress: %d ->\t", logical_addr);
+
+    printf("\e[46m\e[1;37m");
+    printf(" Virtual adress: %d ->        ", logical_addr);
 
     page_num = (logical_addr >> 8) & mask;
 
@@ -81,7 +83,7 @@ int find_page(int logical_addr, char *page_table, TLB *tlb, char *phys_mem, int 
         tlb->ind = (tlb->ind + 1) % TLB_SIZE;
     }
     int index = ((unsigned char)frame * PHYS_MEM_SIZE) + offset;
-    printf("Physical address: %d\n", index);
+    printf("Physical address: %d \e[0m\n", index);
 
     return 0;
 }
