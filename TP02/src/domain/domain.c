@@ -477,13 +477,13 @@ void print_queue_denied_process(domain *process_manager_domain)
         }
         if (aux_pointer_list->content.value == BEST_FIT)
         {
-            printf("|                     \033[38;5;196m  (3) \e[1;97m - BEST FIT => ");
+            printf("\033[38;5;196m  (3) \e[1;97m - BEST FIT => ");
             print_queue_custom(&process_manager_domain->denied_process_best_fit);
             printf("\n");
         }
         if (aux_pointer_list->content.value == WORST_FIT)
         {
-            printf("|                     \033[38;5;196m  (4) \e[1;97m - WORST FIT => ");
+            printf("\033[38;5;196m  (4) \e[1;97m - WORST FIT => ");
             print_queue_custom(&process_manager_domain->denied_process_worst_fit);
             printf("\n");
         }
