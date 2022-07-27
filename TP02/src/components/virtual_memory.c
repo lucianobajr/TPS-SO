@@ -88,7 +88,7 @@ int find_page(int logical_addr, char *page_table, TLB *tlb, char *phys_mem, int 
 
 int made_address(main_memory *main_memory)
 {
-
+    
     FILE *fpointer;
     int address;
     int i = 0;
